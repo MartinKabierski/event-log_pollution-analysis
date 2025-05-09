@@ -4,20 +4,24 @@ import random
 from abc import ABC, abstractmethod
 
 from mako.util import to_list
+from pm4py.objects.log.obj import EventLog
 
 """
 Currently implemented Polluters
 
 Incomplete Data:
-    Delete...   ...random activity (DeleteActivityPolluter)
+    Delete...   ...random activity      (DeleteActivityPolluter)
+                ...random trace         (DeleteTracePolluter)
     
 Incorrect Data:
-    Insert...   ...alien activity (InsertAlienActivityPolluter)
-                ...known activity (InsertRandomActivityPolluter)
-                ...duplicate activity (InsertDuplicateActivityPolluter)
-    Replace...  ...alien activity (ReplaceAlienActivityPolluter)
-                ...known activity (ReplaceRandomActivityPolluter)
-                ...duplicate activity (ReplaceDuplicateActivityPolluter)
+    Insert...   ...alien activity       (InsertAlienActivityPolluter)
+                ...known activity       (InsertRandomActivityPolluter)
+                ...duplicate activity   (InsertDuplicateActivityPolluter)
+                ...duplicate trace      (InsertDuplicateTracePolluter)
+    Replace...  ...alien activity       (ReplaceAlienActivityPolluter)
+                ...known activity       (ReplaceRandomActivityPolluter)
+                ...duplicate activity   (ReplaceDuplicateActivityPolluter)
+                ...duplicate trace      (ReplaceDuplicateTracePolluter)
 """
 
 class LogPolluter(ABC):
@@ -49,8 +53,8 @@ class InsertAlienActivityPolluter(LogPolluter):
         for _ in range (to_duplicate):
             tr = random.choice(log_copy)
             to_insert = random.randint(0, len(tr)-1)
-            tr.insert(to_insert+1, tr[to_duplicate])
-            tr[to_duplicate+1]["concept:name"] = str(random.getrandbits(128))
+            tr.insert(to_insert+1, tr[to_insert])
+            tr[to_insert+1]["concept:name"] = str(random.getrandbits(128))
 
         return log_copy
 
@@ -109,7 +113,6 @@ class InsertRandomActivityPolluter(LogPolluter):
 class DeleteActivityPolluter(LogPolluter):
     """
     Deletes a selected percentage of activities in the log
-
     Example: A B C D E --> A B C E
     """
     def __init__(self, percentage):
@@ -123,7 +126,56 @@ class DeleteActivityPolluter(LogPolluter):
 
         for _ in range (to_delete):
             tr = random.choice(log_copy)
-            tr.pop(random.randint(0,len(tr)-1))
+            to_delete = random.randint(0,len(tr)-1)
+            tr = tr[:to_delete] + tr[to_delete+1:]
+            #tr._list.pop(to_delete)
+            #tr.pop()
+
+        return log_copy
+
+
+class DeleteTracePolluter(LogPolluter):
+    """
+    Deletes a selected percentage of traces in the log
+    Example: L={t_1, t_2, t_3, t_4} --> L={t_1, t_2, t_4}
+    """
+    def __init__(self, percentage):
+        self.percentage = percentage
+
+    def pollute(self, log):
+        log_copy = copy.deepcopy(log)
+        number_of_traces = len(log)
+
+        to_delete = math.ceil(number_of_traces * self.percentage)
+
+        for _ in range (to_delete):
+            selected_trace = random.randint(0, len(log_copy)-1)
+            #del log_copy[selected_trace:selected_trace+1]
+            #log_copy = log_copy[:selected_trace] + log_copy[selected_trace+1:]
+            new_log = EventLog(log_copy[:selected_trace])
+            new_log.append(log_copy[selected_trace+1:])
+            log_copy = new_log
+            #log.pop(random.choice(log_copy))
+
+        return log_copy
+
+
+class InsertDuplicateTracePolluter(LogPolluter):
+    """
+    Insert a selected percentage of duplicate traces in the log
+    Example: L={t_1, t_2, t_3, t_4} --> L={t_1, t_2, t_3, t_3, t_4}
+    """
+    def __init__(self, percentage):
+        self.percentage = percentage
+
+    def pollute(self, log):
+        log_copy = copy.deepcopy(log)
+        number_of_traces = len(log)
+
+        to_insert = math.ceil(number_of_traces * self.percentage)
+
+        for _ in range (to_insert):
+            log.append(random.choice(log_copy))
 
         return log_copy
 
@@ -199,7 +251,7 @@ class ReplaceDuplicateActivityPolluter(LogPolluter):
 
         for _ in range(to_duplicate):
             tr = random.choice(log_copy)
-            to_duplicate = random.randint(1, len(tr) - 1)
+            to_duplicate = random.randint(0, len(tr) - 1)
             tr[to_duplicate]["concept:name"] = tr[to_duplicate - 1]["concept:name"]
 
         return log_copy
@@ -218,10 +270,16 @@ def create_pollution_testbed():
 
     delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in percentages]
 
+    insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
+    delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
+
     return (insert_random_activity_polluters +
                  insert_duplicate_activity_polluters +
                  insert_alien_activity_polluters +
                  replace_random_activity_polluters +
                  replace_duplicate_activity_polluters +
                  replace_alien_activity_polluters +
-                 delete_random_activity_polluters)
+                 delete_random_activity_polluters +
+                 insert_duplicate_trace_polluters +
+                 delete_random_trace_polluters
+            )
