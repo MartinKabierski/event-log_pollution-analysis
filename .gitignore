@@ -172,3 +172,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+GT_log_creation/original_event_logs/BPI_Challenge_2012.xes.gz
+GT_log_creation/original_event_logs/Helpdesk.xes
+GT_log_creation/original_event_logs/HospitalBilling.xes.gz
+GT_log_creation/original_event_logs/RTFM.xes
+GT_log_creation/original_event_logs/Sepsis.xes.gz
+GT_log_creation/playground.ipynb
