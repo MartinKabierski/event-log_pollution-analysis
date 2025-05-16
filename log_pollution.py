@@ -1,11 +1,7 @@
 import copy
 import math
 import random
-import numpy as np
-import datetime as dt
 from abc import ABC, abstractmethod
-from copy import deepcopy
-from collections import defaultdict
 
 from mako.util import to_list
 from pm4py.objects.log.obj import EventLog
@@ -26,8 +22,6 @@ Incorrect Data:
                 ...known activity       (ReplaceRandomActivityPolluter)
                 ...duplicate activity   (ReplaceDuplicateActivityPolluter)
                 ...duplicate trace      (ReplaceDuplicateTracePolluter)
-                
-    Timestamp... ...delayed event logging     (DelayingEventLoggingPolluter)
 """
 
 class LogPolluter(ABC):
@@ -181,7 +175,7 @@ class InsertDuplicateTracePolluter(LogPolluter):
         to_insert = math.ceil(number_of_traces * self.percentage)
 
         for _ in range (to_insert):
-            log.append(random.choice(log_copy))
+            log_copy.append(random.choice(log_copy))
 
         return log_copy
 
@@ -262,116 +256,30 @@ class ReplaceDuplicateActivityPolluter(LogPolluter):
 
         return log_copy
 
-class DelayedEventLoggingPolluter(LogPolluter):
-    """
-    Replaces the timestamp of an event with a later timestamp by introducing a delay sampled from a gamma distribution
-
-    Example: 12:34:56 -> 12:34:56 + 14 min = 12:48:56
-    """
-
-    def __init__(self, percentage, distribution='gamma', parameters={'shape': 2, 'scale': 2}, mean_delay= 30):
-        self.percentage = percentage
-        self.distribution = distribution
-        self.parameters = parameters
-        self.mean_delay = mean_delay
-
-    def pollute(self, log):
-        log_copy = deepcopy(log)
-        number_of_events = sum([len(tr) for tr in log])
-
-        to_pollute = math.ceil(number_of_events * self.percentage)
-
-        # compute a rescaling factor to to get a delay with a mean = mean_delay based on a sampling of the gamma distribution
-        rescale_factor = self.mean_delay / (self.parameters['shape'] * self.parameters['scale'])
-
-        for _ in range(to_pollute):
-            tr = random.choice(log_copy)
-
-            to_replace = random.randint(0, len(tr) - 1)
-            tr[to_replace]["time:timestamp"] += dt.timedelta(minutes=np.random.gamma(shape=self.parameters['shape']) * rescale_factor)
-
-        # Sort each trace by timestamp as order of events may have shifted
-        for i, tr in enumerate(log_copy):
-            sorted_trace = sorted(tr, key=lambda event: event['time:timestamp'])
-            log_copy[i][:] = sorted_trace
-
-        return log_copy
-
-class AggregatedEventLoggingPolluter(LogPolluter):
-    """
-    Replaces the timestamp of an event with a more coarse-grained timestamp
-
-    Example: 12:34:56 -> 12:00:00
-    """
-
-    # supported values for target_precision: day, hour, quarter, minute, second
-    def __init__(self, percentage, target_precision='hour'):
-        self.percentage = percentage
-        self.target_precision = target_precision
-
-    # this function assumes that target_precision is more coarse than current precision
-    def pollute(self, log):
-        log_copy = deepcopy(log)
-        number_of_events = sum([len(tr) for tr in log])
-
-        to_pollute = math.ceil(number_of_events * self.percentage)
-
-        for _ in range(to_pollute):
-            tr = random.choice(log_copy)
-
-            to_replace = random.randint(0, len(tr) - 1)
-            #print(tr[to_replace])
-
-            if self.target_precision == 'second':
-                tr[to_replace]["time:timestamp"].replace(microsecond=0)
-            elif self.target_precision == 'minute':
-                tr[to_replace]["time:timestamp"].replace(second=0, microsecond=0)
-            elif self.target_precision == 'quarter':
-                tr[to_replace]["time:timestamp"].replace(minute=(tr[to_replace]["time:timestamp"]//15)*15, second=0, microsecond=0)
-            elif self.target_precision == 'hour':
-                tr[to_replace]["time:timestamp"].replace(minute=0, second=0, microsecond=0)
-            elif self.target_precision == 'day':
-                tr[to_replace]["time:timestamp"].replace(hour=0, minute=0, second=0, microsecond=0)
-            #print(tr[to_replace])
-
-        for i, tr in enumerate(log_copy):
-            # Group events by timestamp
-            timestamp_groups = defaultdict(list)
-            for event in tr:
-                timestamp_groups[event['time:timestamp']].append(event)
-
-            # Sort timestamps to maintain overall trace order
-            sorted_timestamps = sorted(timestamp_groups.keys())
-
-            # Build new trace by shuffling events in each group
-            new_tr = []
-            for ts in sorted_timestamps:
-                group = timestamp_groups[ts]
-                random.shuffle(group)  # Shuffle in-place
-                new_tr.extend(group)
-
-            log_copy[i] = new_tr
-
-        return log_copy
-
 
 def create_pollution_testbed():
     percentages = [0.10, 0.20, 0.30, 0.40, 0.50]
 
-    #insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
-    #insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
-    #insert_alien_activity_polluters = [InsertAlienActivityPolluter(x) for x in percentages]
+    insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
+    insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
+    insert_alien_activity_polluters = [InsertAlienActivityPolluter(x) for x in percentages]
 
-    #replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
-    #replace_duplicate_activity_polluters = [ReplaceDuplicateActivityPolluter(x) for x in percentages]
-    #replace_alien_activity_polluters = [ReplaceAlienActivityPolluter(x) for x in percentages]
+    replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
+    replace_duplicate_activity_polluters = [ReplaceDuplicateActivityPolluter(x) for x in percentages]
+    replace_alien_activity_polluters = [ReplaceAlienActivityPolluter(x) for x in percentages]
 
-    #delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in percentages]
+    delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in percentages]
 
-    #insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
-    #delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
+    insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
+    delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
 
-    #delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
-    aggregate_timestamp_polluters = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
-
-    return (aggregate_timestamp_polluters)
+    return (insert_random_activity_polluters +
+                 insert_duplicate_activity_polluters +
+                 insert_alien_activity_polluters +
+                 replace_random_activity_polluters +
+                 replace_duplicate_activity_polluters +
+                 replace_alien_activity_polluters +
+                 delete_random_activity_polluters +
+                 insert_duplicate_trace_polluters +
+                 delete_random_trace_polluters
+            )
