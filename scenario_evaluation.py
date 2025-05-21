@@ -8,7 +8,8 @@ from log_pollution import *
 from special4pm.simulation.simulation import simulate_model
 from tqdm import tqdm
 
-# TODO add support for multiple DQIs
+# add support for multiple DQIs
+# TODO add computation of TBR with different logs and models
 def scenario_analysis_discovery(logs):
     IM_NOISE = [0.0, 0.2]
 

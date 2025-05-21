@@ -376,7 +376,7 @@ class AggregatedEventLoggingPolluter(LogPolluter):
 
         return log_copy
 
-class ImpreciseActivityPolluter(LogPolluter):
+class PreciseActivityPolluter(LogPolluter):
     """
     Replaces the activity name of an event with a more fine-grained one
 
@@ -408,6 +408,27 @@ class ImpreciseActivityPolluter(LogPolluter):
 
         return log_copy
 
+# polluter taking a list of precise activity labels and merging them into one (e.g., discharge in Sepsis)
+class ImpreciseActivityPolluter(LogPolluter):
+    def __init__(self, precise_activity_labels, new_activity_label):
+        self.precise_activity_labels = precise_activity_labels
+        self.new_activity_label = new_activity_label
+
+    def pollute(self, log):
+        log_copy = deepcopy(log)
+
+        # loop through the events in the log
+        for i, tr in enumerate(log_copy):
+            #print(tr)
+            for j, event in enumerate(tr):
+
+                # replace precise_activity_labels with new_activity_label
+                if tr[j]["concept:name"] in self.precise_activity_labels:
+                    tr[j]["concept:name"] = self.new_activity_label
+
+        return log_copy
+
+
 def create_pollution_testbed(percentages=[0.10, 0.20, 0.30, 0.40, 0.50]):
 
     #insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
@@ -425,9 +446,10 @@ def create_pollution_testbed(percentages=[0.10, 0.20, 0.30, 0.40, 0.50]):
 
     #delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
     aggregate_timestamp_polluters = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
-    #imprecise_activity_polluters = [ImpreciseActivityPolluter(percentage=x) for x in percentages]
+    #precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
+    imprecise_activity_polluters = ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')
 
-    all_polluters = [insert_alien_activity_polluters, replace_duplicate_activity_polluters, aggregate_timestamp_polluters]
+    all_polluters = [imprecise_activity_polluters]#[insert_alien_activity_polluters, replace_duplicate_activity_polluters, aggregate_timestamp_polluters]
             #[insert_random_activity_polluters, insert_duplicate_activity_polluters, insert_alien_activity_polluters,
             #replace_random_activity_polluters, replace_duplicate_activity_polluters, replace_alien_activity_polluters,
             #delete_random_activity_polluters, insert_duplicate_trace_polluters, delete_random_trace_polluters,
