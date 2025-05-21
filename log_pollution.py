@@ -11,6 +11,7 @@ from mako.util import to_list
 from pm4py.objects.log.obj import EventLog
 from pm4py.statistics.attributes.log import get as attributes_get
 
+
 """
 Currently implemented Polluters
 
@@ -30,6 +31,10 @@ Incorrect Data:
                 
     Timestamp... ...delayed event logging     (DelayingEventLoggingPolluter)
 """
+
+
+# TODO remove deepcopy calls. we do these in noisy_log_evaluation now!
+
 
 class LogPolluter(ABC):
     @abstractmethod
@@ -194,7 +199,7 @@ class InsertDuplicateTracePolluter(LogPolluter):
         to_insert = math.ceil(number_of_traces * self.percentage)
 
         for _ in range (to_insert):
-            log.append(random.choice(log_copy))
+            log_copy.append(random.choice(log_copy))
 
         return log_copy
 
@@ -284,6 +289,7 @@ class ReplaceDuplicateActivityPolluter(LogPolluter):
 
         return log_copy
 
+
 class DelayedEventLoggingPolluter(LogPolluter):
     """
     Replaces the timestamp of an event with a later timestamp by introducing a delay sampled from a gamma distribution
@@ -333,7 +339,7 @@ class AggregatedEventLoggingPolluter(LogPolluter):
 
     # this function assumes that target_precision is more coarse than current precision
     def pollute(self, log):
-        log_copy = deepcopy(log)
+        log_copy = copy.deepcopy(log)
         number_of_events = sum([len(tr) for tr in log])
 
         to_pollute = math.ceil(number_of_events * self.percentage)
@@ -429,30 +435,36 @@ class ImpreciseActivityPolluter(LogPolluter):
         return log_copy
 
 
-def create_pollution_testbed(percentages=[0.10, 0.20, 0.30, 0.40, 0.50]):
+def create_pollution_testbed():
+    percentages = [0.10, 0.20, 0.30, 0.40, 0.50]
 
-    #insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
-    #insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
-    insert_alien_activity_polluters = [InsertAlienActivityPolluter(x, 4) for x in percentages]
+    insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
+    insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
+    insert_alien_activity_polluters = [InsertAlienActivityPolluter(x) for x in percentages]
 
-    #replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
+    replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
     replace_duplicate_activity_polluters = [ReplaceDuplicateActivityPolluter(x) for x in percentages]
-    #replace_alien_activity_polluters = [ReplaceAlienActivityPolluter(x) for x in percentages]
+    replace_alien_activity_polluters = [ReplaceAlienActivityPolluter(x) for x in percentages]
 
-    #delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in percentages]
+    delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in percentages]
 
-    #insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
-    #delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
+    insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
+    delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
 
-    #delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
+    delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
     aggregate_timestamp_polluters = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
     #precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
     imprecise_activity_polluters = ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')
 
-    all_polluters = [imprecise_activity_polluters]#[insert_alien_activity_polluters, replace_duplicate_activity_polluters, aggregate_timestamp_polluters]
-            #[insert_random_activity_polluters, insert_duplicate_activity_polluters, insert_alien_activity_polluters,
-            #replace_random_activity_polluters, replace_duplicate_activity_polluters, replace_alien_activity_polluters,
-            #delete_random_activity_polluters, insert_duplicate_trace_polluters, delete_random_trace_polluters,
-            #delay_event_logging_polluters, aggregate_timestamp_polluters, imprecise_activity_polluters]
-
-    return [polluter for polluter_group in all_polluters for polluter in polluter_group]
+    return (insert_random_activity_polluters +
+                 insert_duplicate_activity_polluters +
+                 insert_alien_activity_polluters +
+                 replace_random_activity_polluters +
+                 replace_duplicate_activity_polluters +
+                 replace_alien_activity_polluters +
+                 delete_random_activity_polluters +
+                 insert_duplicate_trace_polluters +
+                 delete_random_trace_polluters +
+                 delay_event_logging_polluters +
+                 aggregate_timestamp_polluters
+            )
