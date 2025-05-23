@@ -120,7 +120,7 @@ class InsertRandomActivityPolluter(LogPolluter):
 
         return log_copy
 
-
+#TODO investigate, why this polluter does not increase the number of trace variants???
 class DeleteActivityPolluter(LogPolluter):
     """
     Deletes a selected percentage of activities in the log
@@ -360,6 +360,28 @@ class AggregatedEventLoggingPolluter(LogPolluter):
 
         return log_copy
 
+
+# polluter taking a list of precise activity labels and merging them into one (e.g., discharge in Sepsis)
+class ImpreciseActivityPolluter(LogPolluter):
+    def __init__(self, precise_activity_labels, new_activity_label):
+        self.precise_activity_labels = precise_activity_labels
+        self.new_activity_label = new_activity_label
+        self.percentage = None
+
+    def pollute(self, log):
+        log_copy = deepcopy(log)
+
+        # loop through the events in the log
+        for i, tr in enumerate(log_copy):
+            #print(tr)
+            for j, event in enumerate(tr):
+
+                # replace precise_activity_labels with new_activity_label
+                if tr[j]["concept:name"] in self.precise_activity_labels:
+                    tr[j]["concept:name"] = self.new_activity_label
+
+        return log_copy
+
 def create_pollution_testbed():
     percentages = [0.10, 0.20, 0.30, 0.40, 0.50]
 
@@ -376,18 +398,25 @@ def create_pollution_testbed():
     insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
     delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
 
+    imprecise_activity_polluters = [ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')]
     delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
     aggregate_timestamp_polluters = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
 
-    return (insert_random_activity_polluters +
-                 insert_duplicate_activity_polluters +
-                 insert_alien_activity_polluters +
-                 replace_random_activity_polluters +
-                 replace_duplicate_activity_polluters +
-                 replace_alien_activity_polluters +
-                 delete_random_activity_polluters +
-                 insert_duplicate_trace_polluters +
-                 delete_random_trace_polluters +
-                 delay_event_logging_polluters +
-                 aggregate_timestamp_polluters
-            )
+    return (delete_random_activity_polluters +
+            delay_event_logging_polluters +
+            imprecise_activity_polluters +
+            aggregate_timestamp_polluters +
+            insert_alien_activity_polluters)
+
+#    return (insert_random_activity_polluters +
+#                 insert_duplicate_activity_polluters +
+#                 insert_alien_activity_polluters +
+#                 replace_random_activity_polluters +
+#                 replace_duplicate_activity_polluters +
+#                 replace_alien_activity_polluters +
+#                 delete_random_activity_polluters +
+#                 insert_duplicate_trace_polluters +
+#                 delete_random_trace_polluters +
+#                 delay_event_logging_polluters +
+#                 aggregate_timestamp_polluters
+#            )

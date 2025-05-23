@@ -8,11 +8,13 @@ from log_pollution import *
 from special4pm.simulation.simulation import simulate_model
 from tqdm import tqdm
 
-INPUTS = [("BPI_Challenge_2012_perfect_fitting_cases.xes", "BPI_Challenge_2012_inductive.pnml"),
-          ("Helpdesk_perfect_fitting_cases.xes", "Helpdesk_inductive.pnml"),
-          ("HospitalBilling_perfect_fitting_cases.xes", "HospitalBilling_inductive.pnml"),
-          ("RTFM_perfect_fitting_cases.xes", "RTFM_inductive.pnml"),
-          ("Sepsis_perfect_fitting_cases.xes","Sepsis_inductive.pnml")]
+INPUTS = [
+            ("RTFM_perfect_fitting_cases.xes", "RTFM_inductive.pnml"),
+            ("Sepsis_perfect_fitting_cases.xes", "Sepsis_inductive.pnml"),
+            ("BPI_Challenge_2012_perfect_fitting_cases.xes", "BPI_Challenge_2012_inductive.pnml"),
+            ("Helpdesk_perfect_fitting_cases.xes", "Helpdesk_inductive.pnml"),
+            ("HospitalBilling_perfect_fitting_cases.xes", "HospitalBilling_inductive.pnml")
+]
 
 ALGORITHMS = ["IM_0.0", "IM_0.2", "ALPHA", "ILP_1.0", "ILP_0.8"]
 
@@ -31,13 +33,13 @@ def run_algorithm(alg_ID):
         print("ERROR: provided algorithm unknown")
         return
 
-def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, baseline_fm):
+def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, baseline_fm, log_name):
     baseline_results = []
     clean_results = []
     sensitivity_results = []
 
     # Comparing Baseline Model vs Cleaned Log
-    print("Baseline Analysis")
+    print(log_name+ " - Baseline Analysis")
     fitness_tbr = pm4py.conformance.fitness_token_based_replay(clean_log, baseline_model, baseline_im, baseline_fm)
     precision_tbr = pm4py.conformance.precision_token_based_replay(clean_log, baseline_model, baseline_im,
                                                                    baseline_fm)
@@ -52,7 +54,7 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
     for algorithm in ALGORITHMS:
 
     #Comparing
-        print("Clean Log Analysis: "+algorithm)
+        print(log_name+ " - Clean Log Analysis: "+algorithm)
         clean_model, clean_im, clean_fm = run_algorithm(algorithm)
 
         #clean log - token-based replay metrics
@@ -75,7 +77,7 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
 
     #sensitivity analysis
         for polluter in create_pollution_testbed():
-            print("POLLUTION: "+algorithm, str(polluter.get_properties()))
+            print(log_name+ " - POLLUTION: "+algorithm, str(polluter.get_properties()))
 
             #apply pollution pattern
             #log_copy = copy.deepcopy(clean_log)
@@ -88,7 +90,6 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
             polluted_fitness_tbr = pm4py.conformance.fitness_token_based_replay(polluted_log, polluted_model, polluted_im, polluted_fm)
             polluted_precision_tbr = pm4py.conformance.precision_token_based_replay(polluted_log, polluted_model, polluted_im, polluted_fm)
             polluted_generalization_tbr = pm4py.conformance.generalization_tbr(polluted_log, polluted_model, polluted_im, polluted_fm)
-
             #polluted log - alignment-based metrics
             #polluted_fitness_alignment = pm4py.conformance.fitness_alignments(polluted_log, model, im, fm)
             #polluted_precision_alignment = pm4py.conformance.precision_alignments(polluted_log, model, im, fm)
@@ -119,7 +120,7 @@ for (in_log, in_model) in INPUTS:
     #simulated_logs = [simulate_model(net, im, fm, 100) for _ in tqdm(range(1), "Simulating Logs")]
 
     #conduct sensitivity analysis
-    sensitivity_results = sensitivity_analysis_discovery(log, net, im, fm)
+    sensitivity_results = sensitivity_analysis_discovery(log, net, im, fm, in_log)
 
     #save results to disk
     #baseline_df = pandas.DataFrame(baseline_results)
