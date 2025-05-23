@@ -9,6 +9,7 @@ from collections import defaultdict
 
 from mako.util import to_list
 from pm4py.objects.log.obj import EventLog
+from pm4py.statistics.attributes.log import get as attributes_get
 
 
 """
@@ -52,22 +53,34 @@ class InsertAlienActivityPolluter(LogPolluter):
 
     Example: A B C D E --> A B C D fchildsf3d1 E
     """
-    def __init__(self, percentage):
+    def __init__(self, percentage, alien_activity_nr):
         self.percentage = percentage
+        self.alien_activity_nr = alien_activity_nr
 
+    # I (Yannis) modified this polluter to take a number of alien activities instead of generating a different activity for each event (which really messed up the event log too much)
+    # if you do not give in a number of alien activities, this number will be set to the number of events to insert and an activity label will be randomly drawn from this list (slightly different behaviour than original)
     def pollute(self, log):
         log_copy = copy.deepcopy(log)
         number_of_events = sum([len(tr) for tr in log])
+        if self.alien_activity_nr is None:
+            self.alien_activity_nr = number_of_events
+        alien_activities = []
 
         to_duplicate = math.ceil(number_of_events * self.percentage)
+
+        for _ in range(self.alien_activity_nr):
+            alien_activities.append(str(random.getrandbits(128)))
 
         for _ in range (to_duplicate):
             tr = random.choice(log_copy)
             to_insert = random.randint(0, len(tr)-1)
-            tr.insert(to_insert+1, tr[to_insert])
-            tr[to_insert+1]["concept:name"] = str(random.getrandbits(128))
+            new_event = copy.deepcopy(tr[to_insert])
+            new_event['concept:name'] =random.choice(alien_activities)
+            tr.insert(to_insert+1, new_event) # the deep copy is there to solve an issue that duplicated the inserted activity
 
         return log_copy
+
+
 
 
 class InsertDuplicateActivityPolluter(LogPolluter):
@@ -197,20 +210,29 @@ class ReplaceAlienActivityPolluter(LogPolluter):
 
     Example: A B C D E --> A B C xhfuej32 E
     """
-    def __init__(self, percentage):
+    def __init__(self, percentage, alien_activity_nr):
         self.percentage = percentage
+        self.alien_activity_nr = alien_activity_nr
 
+    # I (Yannis) modified this polluter to take a number of alien activities instead of generating a different activity for each event (which really messed up the event log too much)
+    # if you do not give in a number of alien activities, this number will be set to the number of events to insert and an activity label will be randomly drawn from this list (slightly different behaviour than original)
     def pollute(self, log):
         log_copy = copy.deepcopy(log)
         number_of_events = sum([len(tr) for tr in log])
+        if self.alien_activity_nr is None:
+            self.alien_activity_nr = number_of_events
+        alien_activities = []
 
         to_duplicate = math.ceil(number_of_events * self.percentage)
+
+        for _ in range(self.alien_activity_nr):
+            alien_activities.append(str(random.getrandbits(128)))
 
         for _ in range (to_duplicate):
             tr = random.choice(log_copy)
 
             to_replace = random.randint(0, len(tr)-1)
-            tr[to_replace]["concept:name"] = str(random.getrandbits(128))
+            tr[to_replace]["concept:name"] = random.choice(alien_activities)
 
         return log_copy
 
@@ -361,12 +383,45 @@ class AggregatedEventLoggingPolluter(LogPolluter):
         return log_copy
 
 
+class PreciseActivityPolluter(LogPolluter):
+    """
+    Replaces the activity name of an event with a more fine-grained one
+
+    Example: A -> A_2
+    """
+    def __init__(self, percentage, imprecision_levels=1):
+        self.imprecision_levels = imprecision_levels # number of levels of precision to add
+        self.percentage = percentage # percentage of activities impacted
+
+    def pollute(self, log):
+        log_copy = deepcopy(log)
+
+        activities_list = list(attributes_get.get_attribute_values(log, "concept:name").keys())
+
+        number_of_activities = math.ceil(len(activities_list) * self.percentage)
+        to_pollute = activities_list[:number_of_activities]
+        #print(activities_list, number_of_activities)
+
+        for i, tr in enumerate(log_copy):
+            #print(tr)
+            for j, event in enumerate(tr):
+                if tr[j]["concept:name"] in to_pollute:
+                    #print(tr[j]["concept:name"])
+                    for _ in range(self.imprecision_levels):
+                        tr[j]["concept:name"] += '_' + str(random.randint(1,5))
+                    #print(tr[j]["concept:name"])
+
+            #print(tr)
+
+        return log_copy
+
 # polluter taking a list of precise activity labels and merging them into one (e.g., discharge in Sepsis)
 class ImpreciseActivityPolluter(LogPolluter):
     def __init__(self, precise_activity_labels, new_activity_label):
         self.precise_activity_labels = precise_activity_labels
         self.new_activity_label = new_activity_label
         self.percentage = None
+
 
     def pollute(self, log):
         log_copy = deepcopy(log)
@@ -381,6 +436,7 @@ class ImpreciseActivityPolluter(LogPolluter):
                     tr[j]["concept:name"] = self.new_activity_label
 
         return log_copy
+
 
 def create_pollution_testbed():
     percentages = [0.10, 0.20, 0.30, 0.40, 0.50]
@@ -401,6 +457,8 @@ def create_pollution_testbed():
     imprecise_activity_polluters = [ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')]
     delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
     aggregate_timestamp_polluters = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
+    precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
+    imprecise_activity_polluters = ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')
 
     return (delete_random_activity_polluters +
             delay_event_logging_polluters +
