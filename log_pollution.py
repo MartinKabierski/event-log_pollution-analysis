@@ -1,5 +1,6 @@
 import copy
 import math
+import os
 import random
 import numpy as np
 import datetime as dt
@@ -7,6 +8,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from collections import defaultdict
 
+import pm4py
 from mako.util import to_list
 from pm4py.objects.log.obj import EventLog
 from pm4py.statistics.attributes.log import get as attributes_get
@@ -53,7 +55,7 @@ class InsertAlienActivityPolluter(LogPolluter):
 
     Example: A B C D E --> A B C D fchildsf3d1 E
     """
-    def __init__(self, percentage, alien_activity_nr):
+    def __init__(self, percentage, alien_activity_nr=None):
         self.percentage = percentage
         self.alien_activity_nr = alien_activity_nr
 
@@ -62,13 +64,26 @@ class InsertAlienActivityPolluter(LogPolluter):
     def pollute(self, log):
         log_copy = copy.deepcopy(log)
         number_of_events = sum([len(tr) for tr in log])
+        unique_activities = set()
+        for tr in log:
+            for e in tr:
+                unique_activities.add(e['concept:name'])
+
+
+        #TODO This mess of a fix will break so easily :(
+        no_alien_activities = 0
         if self.alien_activity_nr is None:
-            self.alien_activity_nr = number_of_events
+            no_alien_activities = math.ceil(math.sqrt(len(unique_activities)))
+        elif self.alien_activity_nr == "sqrt":
+            no_alien_activities = math.ceil(math.sqrt(len(unique_activities)))
+        elif 0.0 <= self.alien_activity_nr <= 1.0:
+            no_alien_activities = math.ceil(self.alien_activity_nr * len(unique_activities))
+
         alien_activities = []
 
         to_duplicate = math.ceil(number_of_events * self.percentage)
 
-        for _ in range(self.alien_activity_nr):
+        for _ in range(no_alien_activities):
             alien_activities.append(str(random.getrandbits(128)))
 
         for _ in range (to_duplicate):
@@ -133,7 +148,6 @@ class InsertRandomActivityPolluter(LogPolluter):
 
         return log_copy
 
-#TODO investigate, why this polluter does not increase the number of trace variants???
 class DeleteActivityPolluter(LogPolluter):
     """
     Deletes a selected percentage of activities in the log
@@ -147,11 +161,19 @@ class DeleteActivityPolluter(LogPolluter):
         number_of_events = sum([len(tr) for tr in log])
 
         to_delete = math.ceil(number_of_events * self.percentage)
-
+        #print(to_delete)
         for _ in range (to_delete):
-            tr = random.choice(log_copy)
-            to_delete = random.randint(0,len(tr)-1)
-            tr = tr[:to_delete] + tr[to_delete+1:]
+            tr_idx = random.randint(0,len(log_copy)-1)
+            tr = log[tr_idx]
+            #if trace has length 1 (i.e. 0 after removal of single activity), remove it from the log entirely
+            if len(tr)==1:
+                new_log = EventLog(log_copy[:tr_idx])
+                new_log.append(log_copy[tr_idx + 1:])
+                log_copy = new_log
+                continue
+            deletion_position = random.randint(0,len(tr))
+            tr= tr[:deletion_position] + tr[deletion_position+1:]
+            log_copy[tr_idx] = tr
             #tr._list.pop(to_delete)
             #tr.pop()
 
@@ -210,7 +232,7 @@ class ReplaceAlienActivityPolluter(LogPolluter):
 
     Example: A B C D E --> A B C xhfuej32 E
     """
-    def __init__(self, percentage, alien_activity_nr):
+    def __init__(self, percentage, alien_activity_nr= None):
         self.percentage = percentage
         self.alien_activity_nr = alien_activity_nr
 
@@ -220,7 +242,7 @@ class ReplaceAlienActivityPolluter(LogPolluter):
         log_copy = copy.deepcopy(log)
         number_of_events = sum([len(tr) for tr in log])
         if self.alien_activity_nr is None:
-            self.alien_activity_nr = number_of_events
+            self.alien_activity_nr = math.sqrt(number_of_events)
         alien_activities = []
 
         to_duplicate = math.ceil(number_of_events * self.percentage)
@@ -439,11 +461,13 @@ class ImpreciseActivityPolluter(LogPolluter):
 
 
 def create_pollution_testbed():
-    percentages = [0.10, 0.20, 0.30, 0.40, 0.50]
+    percentages = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
 
     insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
     insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
-    insert_alien_activity_polluters = [InsertAlienActivityPolluter(x) for x in percentages]
+    insert_alien_activity_polluters_sqrt = [InsertAlienActivityPolluter(x,"sqrt") for x in percentages]
+    insert_alien_activity_polluters_fixed = [InsertAlienActivityPolluter(x,0.2) for x in percentages]
+
 
     replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
     replace_duplicate_activity_polluters = [ReplaceDuplicateActivityPolluter(x) for x in percentages]
@@ -456,15 +480,18 @@ def create_pollution_testbed():
 
     imprecise_activity_polluters = [ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')]
     delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
-    aggregate_timestamp_polluters = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
+    aggregate_timestamp_polluters_hourly = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
+    aggregate_timestamp_polluters_daily = [AggregatedEventLoggingPolluter(percentage=x, target_precision='day') for x in percentages]
+
     precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
-    imprecise_activity_polluters = ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')
 
     return (delete_random_activity_polluters +
             delay_event_logging_polluters +
             imprecise_activity_polluters +
-            aggregate_timestamp_polluters +
-            insert_alien_activity_polluters)
+            aggregate_timestamp_polluters_hourly +
+            aggregate_timestamp_polluters_daily +
+            insert_alien_activity_polluters_sqrt)
+            #insert_alien_activity_polluters_fixed)
 
 #    return (insert_random_activity_polluters +
 #                 insert_duplicate_activity_polluters +
@@ -478,3 +505,18 @@ def create_pollution_testbed():
 #                 delay_event_logging_polluters +
 #                 aggregate_timestamp_polluters
 #            )
+
+
+#delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
+#log = pm4py.read_xes(os.path.join("in", "logs", "RTFM_perfect_fitting_cases.xes"), return_legacy_log_object=True)
+#net, im, fm = pm4py.read_pnml(os.path.join("in", "models", "Sepsis_inductive.pnml"))
+
+#for p in delete_random_activity_polluters:
+#    p2 = p.pollute(log)
+#    m, im, fm = pm4py.discovery.discover_petri_net_inductive(p2, noise_threshold=0.2)
+
+#    polluted_fitness_tbr = pm4py.conformance.fitness_token_based_replay(p2, m, im, fm)
+#    polluted_precision_tbr = pm4py.conformance.precision_token_based_replay(p2, m, im, fm)
+#    polluted_generalization_tbr = pm4py.conformance.generalization_tbr(p2, m, im, fm)
+
+#    print(polluted_fitness_tbr['average_trace_fitness'], polluted_precision_tbr, polluted_generalization_tbr)
