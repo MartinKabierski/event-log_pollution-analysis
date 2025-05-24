@@ -10,7 +10,7 @@ from collections import defaultdict
 
 import pm4py
 from mako.util import to_list
-from pm4py.objects.log.obj import EventLog
+from pm4py.objects.log.obj import EventLog, Trace, Event
 from pm4py.statistics.attributes.log import get as attributes_get
 
 
@@ -87,10 +87,26 @@ class InsertAlienActivityPolluter(LogPolluter):
             alien_activities.append(str(random.getrandbits(128)))
 
         for _ in range (to_duplicate):
-            tr = random.choice(log_copy)
-            to_insert = random.randint(0, len(tr)-1)
+            tr_idx = random.randint(0,len(log_copy)-1)
+            tr = log_copy[tr_idx]
+
+            to_insert = 0 if len(tr) <= 1 else random.randint(0, len(tr)-1)
+            if len(tr) < to_insert:
+                print(len(tr)-1,to_insert)
+                print(tr)
+            #if len(tr) <= 1:
+            #    to_insert = 0
+            #else:
+            #    to_insert = random.randint(0, len(tr)-1)
+            #new_event = {}
+            #for x in tr[to_insert].keys():
+            #    new_event[x]=tr[to_insert][x]
+
             new_event = copy.deepcopy(tr[to_insert])
-            new_event['concept:name'] =random.choice(alien_activities)
+            new_event['concept:name'] = random.choice(alien_activities)
+            #new_event = Event(tr[to_insert])
+
+            #new_event['concept:name'] = random.choice(alien_activities)
             tr.insert(to_insert+1, new_event) # the deep copy is there to solve an issue that duplicated the inserted activity
 
         return log_copy
@@ -164,16 +180,29 @@ class DeleteActivityPolluter(LogPolluter):
         #print(to_delete)
         for _ in range (to_delete):
             tr_idx = random.randint(0,len(log_copy)-1)
-            tr = log[tr_idx]
+            tr = log_copy[tr_idx]
             #if trace has length 1 (i.e. 0 after removal of single activity), remove it from the log entirely
             if len(tr)==1:
-                new_log = EventLog(log_copy[:tr_idx])
-                new_log.append(log_copy[tr_idx + 1:])
-                log_copy = new_log
+                new_log = log_copy[:tr_idx] + log_copy[tr_idx + 1:]
+                log_copy = EventLog(new_log)
                 continue
             deletion_position = random.randint(0,len(tr))
-            tr= tr[:deletion_position] + tr[deletion_position+1:]
-            log_copy[tr_idx] = tr
+
+            new_tr= tr[:deletion_position] + tr[deletion_position+1:]
+            attributes = tr.attributes
+            #print(len(log[tr_idx]),log[tr_idx])
+            #print(tr.attributes)
+            if len(attributes)==0:
+                log_copy[tr_idx] = Trace(new_tr, **attributes)
+            else:
+                log_copy[tr_idx] = Trace(new_tr, **attributes)
+            #log[tr_idx].attributes = attributes
+            #print(len(log[tr_idx]), log[tr_idx])
+            #print(log[tr_idx].attributes)
+
+            #print(log_copy[tr_idx])
+            #log_copy[tr_idx] = tr
+            #print(log_copy[tr_idx])
             #tr._list.pop(to_delete)
             #tr.pop()
 
@@ -335,9 +364,10 @@ class DelayedEventLoggingPolluter(LogPolluter):
         rescale_factor = self.mean_delay / (self.parameters['shape'] * self.parameters['scale'])
 
         for _ in range(to_pollute):
-            tr = random.choice(log_copy)
+            tr = log_copy[random.randint(0,len(log_copy)-1)]
 
-            to_replace = random.randint(0, len(tr) - 1)
+            to_replace = 0 if len(tr) <= 1 else random.randint(0, len(tr)-1)
+
             tr[to_replace]["time:timestamp"] += dt.timedelta(minutes=np.random.gamma(shape=self.parameters['shape']) * rescale_factor)
 
         # Sort each trace by timestamp as order of events may have shifted
@@ -367,11 +397,11 @@ class AggregatedEventLoggingPolluter(LogPolluter):
         to_pollute = math.ceil(number_of_events * self.percentage)
 
         for _ in range(to_pollute):
-            tr = random.choice(log_copy)
+            tr = log_copy[random.randint(0, len(log_copy) - 1)]
+            to_replace = 0 if len(tr) <= 1 else random.randint(0, len(tr)-1)
 
-            to_replace = random.randint(0, len(tr) - 1)
             #print(tr[to_replace])
-
+            #print(tr[to_replace]["time:timestamp"])
             if self.target_precision == 'second':
                 tr[to_replace]["time:timestamp"].replace(microsecond=0)
             elif self.target_precision == 'minute':
@@ -399,8 +429,9 @@ class AggregatedEventLoggingPolluter(LogPolluter):
                 group = timestamp_groups[ts]
                 random.shuffle(group)  # Shuffle in-place
                 new_tr.extend(group)
+            attributes = tr.attributes
 
-            log_copy[i] = new_tr
+            log_copy[i] = Trace(new_tr, **attributes)
 
         return log_copy
 
@@ -485,12 +516,12 @@ def create_pollution_testbed():
 
     precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
 
-    return (delete_random_activity_polluters +
-            delay_event_logging_polluters +
-            imprecise_activity_polluters +
+    return (insert_alien_activity_polluters_sqrt +
             aggregate_timestamp_polluters_hourly +
             aggregate_timestamp_polluters_daily +
-            insert_alien_activity_polluters_sqrt)
+            delay_event_logging_polluters +
+            delete_random_activity_polluters +
+            imprecise_activity_polluters)
             #insert_alien_activity_polluters_fixed)
 
 #    return (insert_random_activity_polluters +

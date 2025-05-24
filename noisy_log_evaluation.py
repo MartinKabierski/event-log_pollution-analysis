@@ -9,7 +9,7 @@ INPUTS = [
             ("HospitalBilling_perfect_fitting_cases.xes", "HospitalBilling_inductive.pnml")
 ]
 
-ALGORITHMS = ["IM_0.0", "IM_0.2", "ALPHA", "ILP_1.0", "ILP_0.8"]
+ALGORITHMS = ["IM_0.0", "IM_0.2", "ALPHA", "ILP_0.8", "ILP_1.0"]
 
 def run_algorithm(l ,alg_ID):
     if alg_ID == "IM_0.0":
@@ -136,7 +136,6 @@ for (in_log, in_model) in INPUTS:
 
     #Load ground truth log
     log = pm4py.read_xes(os.path.join("in","logs",in_log), return_legacy_log_object=True)
-
     #Load ground truth model
     net, im, fm = pm4py.read_pnml(os.path.join("in","models",in_model))
 
@@ -144,5 +143,4 @@ for (in_log, in_model) in INPUTS:
 
     #save results as csv
     polluted_df = pandas.DataFrame(results)
-    truncated_model_name = in_model[:-5]
     polluted_df.to_csv(os.path.join("out", in_model+"discovery_sensitivity.csv"), index = False)
