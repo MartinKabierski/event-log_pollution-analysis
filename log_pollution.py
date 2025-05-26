@@ -7,6 +7,8 @@ import datetime as dt
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from collections import defaultdict
+from datetime import timedelta
+
 
 import pm4py
 from mako.util import to_list
@@ -163,6 +165,7 @@ class InsertRandomActivityPolluter(LogPolluter):
             tr[trace_to_duplicate+1]["concept:name"] = random.choice(list(log_activities))
 
         return log_copy
+
 
 class DeleteActivityPolluter(LogPolluter):
     """
@@ -348,7 +351,7 @@ class DelayedEventLoggingPolluter(LogPolluter):
     Example: 12:34:56 -> 12:34:56 + 14 min = 12:48:56
     """
 
-    def __init__(self, percentage, distribution='gamma', parameters={'shape': 2, 'scale': 2}, mean_delay= 30):
+    def __init__(self, percentage=1.0, distribution='gamma', parameters={'shape': 2, 'scale': 2}, mean_delay= None):
         self.percentage = percentage
         self.distribution = distribution
         self.parameters = parameters
@@ -358,9 +361,25 @@ class DelayedEventLoggingPolluter(LogPolluter):
         log_copy = deepcopy(log)
         number_of_events = sum([len(tr) for tr in log])
 
+        if self.mean_delay is None:
+            # compute a mean_delay depending on the average time between events in the log
+            total_delta = timedelta(0)
+            total_transitions = 0
+
+            for trace in log:
+                # Sort events in case they're not already ordered
+                events = sorted(trace, key=lambda e: e['time:timestamp'])
+                for i in range(1, len(events)):
+                    delta = events[i]['time:timestamp'] - events[i - 1]['time:timestamp']
+                    total_delta += delta
+                    total_transitions += 1
+
+            # Calculate average time between events
+            self.mean_delay = total_delta.total_seconds() / 60 / total_transitions
+
         to_pollute = math.ceil(number_of_events * self.percentage)
 
-        # compute a rescaling factor to to get a delay with a mean = mean_delay based on a sampling of the gamma distribution
+        # compute a rescaling factor to get a delay with a mean = mean_delay based on a sampling of the gamma distribution
         rescale_factor = self.mean_delay / (self.parameters['shape'] * self.parameters['scale'])
 
         for _ in range(to_pollute):
@@ -385,7 +404,7 @@ class AggregatedEventLoggingPolluter(LogPolluter):
     """
 
     # supported values for target_precision: day, hour, quarter, minute, second
-    def __init__(self, percentage, target_precision='hour'):
+    def __init__(self, percentage=1.0, target_precision='hour'):
         self.percentage = percentage
         self.target_precision = target_precision
 
