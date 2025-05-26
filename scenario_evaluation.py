@@ -11,10 +11,10 @@ from log_pollution import *
 
 INPUT_PATH = 'GT_log_creation'
 
-INPUTS = [#("Sepsis Cases - Event Log_0_1_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_1_inductive.pnml"),
-          #("Sepsis Cases - Event Log_0_2_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_2_inductive.pnml"),
-          #("Sepsis Cases - Event Log_0_3_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_3_inductive.pnml"),
-          #("Sepsis Cases - Event Log_0_4_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_4_inductive.pnml"),
+INPUTS = [("Sepsis Cases - Event Log_0_1_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_1_inductive.pnml"),
+          ("Sepsis Cases - Event Log_0_2_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_2_inductive.pnml"),
+          ("Sepsis Cases - Event Log_0_3_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_3_inductive.pnml"),
+          ("Sepsis Cases - Event Log_0_4_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_4_inductive.pnml"),
           ("Sepsis Cases - Event Log_0_5_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_5_inductive.pnml")]
 
 ALGORITHMS = ["IM_0.0", "IM_0.2", "ALPHA", "ILP_1.0", "ILP_0.8"]
@@ -34,8 +34,8 @@ def run_algorithm(alg_ID, log):
         raise ValueError("ERROR: provided algorithm " + alg_ID + " unknown")
         #return
 
-# add support for multiple DQIs
-# TODO add computation of TBR with different logs and models
+# added support for multiple DQIs
+# added computation of TBR with different logs and models
 def scenario_analysis_discovery(clean_log, baseline_model, baseline_im, baseline_fm):
 
     #baseline analysis
@@ -122,6 +122,8 @@ def scenario_analysis_discovery(clean_log, baseline_model, baseline_im, baseline
 def apply_optimised_discovery(results_path, original_log):
     results = pd.read_csv(results_path, header=0)
     best_f1 = 0
+
+    # loop over the results of the sensitivity analysis to find out algorithm with best f1-score
     for row in results.index:
         if results.loc[row, 'pollution_type'] is not None:
             model = results.loc[row,:]
@@ -130,6 +132,7 @@ def apply_optimised_discovery(results_path, original_log):
                 best_algorithm = model['algorithm']
                 best_f1 = f1_score
 
+    # run best algorithm to obtain a "DQI optimised" process model
     print('Applying optimised process discovery')
     opt_model, opt_im, opt_fm = run_algorithm(best_algorithm, original_log)
 
@@ -137,6 +140,7 @@ def apply_optimised_discovery(results_path, original_log):
     pm4py.write_pnml(opt_model, opt_im, opt_fm, results_path + '_optimised_' + best_algorithm + '.pnml')
     pm4py.save_vis_petri_net(opt_model, opt_im, opt_fm, file_path=results_path + '_optimised_' + best_algorithm +'_inductive_view.png')  # This will save a view for the Petri net
 
+    # compute model quality metrics and return the results in a dataframe
     opt_fitness_tbr = pm4py.conformance.fitness_token_based_replay(original_log, opt_model,
                                                                         opt_im, opt_fm)
     opt_precision_tbr = pm4py.conformance.precision_token_based_replay(original_log,
@@ -147,7 +151,6 @@ def apply_optimised_discovery(results_path, original_log):
 
     opt_results = pd.DataFrame.from_dict({"algorithm": [best_algorithm],
                              "scenario": [results_path],
-                             #"percentage": pollution_percentages,
                              "fitness_tbr": [opt_fitness_tbr['average_trace_fitness']],
                              "precision_tbr": [opt_precision_tbr],
                              "generalization_tbr": [opt_generalization_tbr]})
@@ -165,7 +168,7 @@ for (in_log, in_model) in INPUTS:
     net, im, fm = pm4py.read_pnml(os.path.join(INPUT_PATH, "process_models", in_model))
     #net, im, fm = pm4py.discover_petri_net_inductive(log)
 
-    #TODO use log as baseline. get results from original model and log as well
+    # use log as baseline. get results from original model and log as well
 
     #Simulate sample logs from ground truth model
     #simulated_logs = [simulate_model(net, im, fm, 100) for _ in tqdm(range(1), "Simulating Logs")]
@@ -182,9 +185,8 @@ for (in_log, in_model) in INPUTS:
     polluted_df = pandas.DataFrame(scenario_results)
     polluted_df.to_csv(os.path.join("results", out_path+"_scenario_results.csv"), index = False)
 
-    #out_path = in_model.removesuffix('.pnml')
-
-    # Apply optimised process discovery #TODO update paths
+    # Apply optimised process discovery
+    # paths should be correct now
     original_log = pm4py.read_xes(os.path.join(INPUT_PATH, 'original_event_logs', 'Sepsis Cases - Event Log.xes.gz'))
 
     optimised_df = apply_optimised_discovery(os.path.join('results', out_path+ '_scenario_results.csv'),
