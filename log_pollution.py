@@ -516,7 +516,6 @@ class ImpreciseActivityPolluter(LogPolluter):
         for i, tr in enumerate(log_copy):
             #print(tr)
             for j, event in enumerate(tr):
-
                 # replace precise_activity_labels with new_activity_label
                 if tr[j]["concept:name"] in self.precise_activity_labels:
                     tr[j]["concept:name"] = self.new_activity_label
@@ -542,7 +541,7 @@ def create_pollution_testbed():
     insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
     delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
 
-    imprecise_activity_polluters = [ImpreciseActivityPolluter(precise_activity_labels=['Release_A', 'Release_B', 'Release_C', 'Release_D', 'Release_E'], new_activity_label='Release')]
+    imprecise_activity_polluters = [ImpreciseActivityPolluter(precise_activity_labels=['Release A', 'Release B', 'Release C', 'Release D', 'Release E'], new_activity_label='Release')]
     delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
     aggregate_timestamp_polluters_hourly = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
     aggregate_timestamp_polluters_daily = [AggregatedEventLoggingPolluter(percentage=x, target_precision='day') for x in percentages]
