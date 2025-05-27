@@ -20,20 +20,29 @@ from pm4py.statistics.attributes.log import get as attributes_get
 Currently implemented Polluters
 
 Incomplete Data:
-    Delete...   ...random activity      (DeleteActivityPolluter)
-                ...random trace         (DeleteTracePolluter)
+    Delete...   ...random activity              (DeleteActivityPolluter)
+                ...random trace                 (DeleteTracePolluter)
     
 Incorrect Data:
-    Insert...   ...alien activity       (InsertAlienActivityPolluter)
-                ...known activity       (InsertRandomActivityPolluter)
-                ...duplicate activity   (InsertDuplicateActivityPolluter)
-                ...duplicate trace      (InsertDuplicateTracePolluter)
-    Replace...  ...alien activity       (ReplaceAlienActivityPolluter)
-                ...known activity       (ReplaceRandomActivityPolluter)
-                ...duplicate activity   (ReplaceDuplicateActivityPolluter)
-                ...duplicate trace      (ReplaceDuplicateTracePolluter)
+    Insert...   ...alien activity               (InsertAlienActivityPolluter)
+                ...known activity               (InsertRandomActivityPolluter)
+                ...duplicate activity           (InsertDuplicateActivityPolluter)
+                ...duplicate trace              (InsertDuplicateTracePolluter)
+    Replace...  ...alien activity               (ReplaceAlienActivityPolluter)
+                ...known activity               (ReplaceRandomActivityPolluter)
+                ...duplicate activity           (ReplaceDuplicateActivityPolluter)
+                ...duplicate trace              (ReplaceDuplicateTracePolluter)
                 
-    Timestamp... ...delayed event logging     (DelayingEventLoggingPolluter)
+    Timestamp... ...delayed event logging       (DelayingEventLoggingPolluter)
+    
+Imprecise Data:
+    Timestamp... ...aggregated event logging    (AggregatedEventLoggingPolluter)
+    Replace...  ...precise event label          (PreciseActivityPolluter)
+    Replace...  ...imprecise event label        (ImpreciseActivityPolluter)
+    
+Irrelevant Data:
+    Insert...   ...alien activity               (InsertAlienActivityPolluter)
+    Replace...  ...alien activity               (ReplaceAlienActivityPolluter)
 """
 
 
@@ -489,6 +498,11 @@ class PreciseActivityPolluter(LogPolluter):
 
 # polluter taking a list of precise activity labels and merging them into one (e.g., discharge in Sepsis)
 class ImpreciseActivityPolluter(LogPolluter):
+    """
+    Replaces specified precise activity names of events with a more coarse-grained one
+
+    Example: A_1, A_2 -> A, A
+    """
     def __init__(self, precise_activity_labels, new_activity_label):
         self.precise_activity_labels = precise_activity_labels
         self.new_activity_label = new_activity_label
