@@ -82,10 +82,7 @@ for dqi in DQI_types:
             # if f1-score metric is requested, compute it from fitness and precision
             if metric == 'f1-score_tbr':
                 results_dqi['f1-score_tbr'+'_'+lm] = compute_f1_score(results_dqi['fitness_tbr'+'_'+lm], results_dqi['precision_tbr'+'_'+lm])
-                baseline_value = compute_f1_score(results_dqi['fitness_tbr'+'_cl-cm'].iat[0], results_dqi['precision_tbr'+'_cl-cm'].iat[0])
-            else:
-                # compute the baseline value for the metric, without DQIs
-                baseline_value = results_dqi[metric + '_cl-cm'].iat[0]
+                results_dqi['f1-score_tbr_cl-cm'] = compute_f1_score(results_dqi['fitness_tbr_cl-cm'], results_dqi['precision_tbr_cl-cm'])
 
             # create string with human-readable title for the plot
             plot_title = 'Sensitivity of ' + metrics_labels[metric] + ' to ' + dqi + ' in ' + log_model_comb_labels[lm]
@@ -95,6 +92,8 @@ for dqi in DQI_types:
             for var, group in results_dqi.groupby('algorithm'):
                 # create lists with the values to plot to easily add the baseline value (without DQIs) at the beginning of the values list
                 plot_x = [0.0] + group['percentage'].to_list()
+
+                baseline_value = group[metric + '_cl-cm'].iat[0]
                 plot_y = [baseline_value] + group[col].to_list()
                 plt.plot(plot_x, plot_y, label=var)
 
