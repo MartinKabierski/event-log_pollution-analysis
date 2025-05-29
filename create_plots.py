@@ -1,13 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from itertools import product
+
 from pathlib import Path
 
 # here we define some necessary input to generate the plots
 METRICS = ["fitness_tbr", "precision_tbr", "generalization_tbr"]#, "f1-score_tbr"] # metrics we want to plot
-LOG_MODEL_COMB = ['cl-cm', 'pl-cm', 'cl-pm', 'pl-pm'] # log-model combination we want to plot
-#RESULTS_PATH = Path('out') # path where the results csv files are located
+LOG_MODEL_COMB = ['cl-bm', 'cl-cm', 'pl-cm', 'cl-pm', 'pl-pm'] # log-model combination we want to plot
+#RESULTS_PATH = Path('out') # path where the scenario_results csv files are located
 IGNORE_COLS = ['alien_activity_nr', 'target_precision', 'distribution', 'parameters', 'mean_delay',
-               'precise_activity_labels', 'new_activity_label'] # columns in the results csv files that do not contain
+               'precise_activity_labels', 'new_activity_label'] # columns in the scenario_results csv files that do not contain
                                                                 # values (typically, parameters of the polluters)
 
 # these dictionaries are defined to get clearer titles for the plots
@@ -20,9 +22,9 @@ def compute_f1_score(fitness, precision):
     return 2/(1/fitness + 1/precision)
 
 
-# aggregate the results for all logs and clean up the resulting dataframe a bit
-# parameters: results_path: a Path to a directory containing the results output by noisy_log_evaluation in csv format
-# to_ignore_columns: list of columns from the results output that do not contain results (= parameters of the polluters
+# aggregate the scenario_results for all logs and clean up the resulting dataframe a bit
+# parameters: results_path: a Path to a directory containing the scenario_results output by noisy_log_evaluation in csv format
+# to_ignore_columns: list of columns from the scenario_results output that do not contain scenario_results (= parameters of the polluters
 #                                                                                          , e.g., 'distribution')
 def compute_average_across_dfs(results_path, to_ignore_columns):
     # Get list of all CSV files in the folder
@@ -31,7 +33,7 @@ def compute_average_across_dfs(results_path, to_ignore_columns):
     # Read all CSVs into a list of DataFrames
     dfs_list = [pd.read_csv(f) for f in csv_files]
 
-    # Create an empty DataFrame to store results
+    # Create an empty DataFrame to store scenario_results
     result_df = pd.DataFrame()
 
     # Loop through columns
@@ -63,13 +65,13 @@ def compute_average_across_dfs(results_path, to_ignore_columns):
 
 
 def plot_results(results, metrics=['fitness_tbr'], log_model_comb= ['cm-pl'], dqi_types=None, save_plots=True):
-    #results = pd.read_csv(results_path)
+    #scenario_results = pd.read_csv(results_path)
 
-    # gather the different pollution patterns and algorithms present in the results
+    # gather the different pollution patterns and algorithms present in the scenario_results
     if dqi_types is None:
         dqi_types = list(results['pollution_pattern'].unique())
 
-    # loop over the DQIs, metrics and log-model combinations to access the results we want to plot
+    # loop over the DQIs, metrics and log-model combinations to access the scenario_results we want to plot
     for dqi in dqi_types:
         results_dqi = results.loc[(results['pollution_pattern'] == dqi)]
         for metric in metrics:
@@ -100,41 +102,41 @@ def plot_results(results, metrics=['fitness_tbr'], log_model_comb= ['cm-pl'], dq
                 plt.close()
 
 
-# call to the compute_average_across_dfs function to average the results over the four logs and save the resulting
+# call to the compute_average_across_dfs function to average the scenario_results over the four logs and save the resulting
 # dataframe for easy access later
 
-#results = compute_average_across_dfs(RESULTS_PATH, IGNORE_COLS)
-#results.loc[results['pollution_pattern'] == 'ImpreciseActivityPolluter', 'percentage'] = 1.0
-#results.to_csv('out/derived_results/aggregated_results.csv', index=False)
+#scenario_results = compute_average_across_dfs(RESULTS_PATH, IGNORE_COLS)
+#scenario_results.loc[scenario_results['pollution_pattern'] == 'ImpreciseActivityPolluter', 'percentage'] = 1.0
+#scenario_results.to_csv('out/derived_results/aggregated_results.csv', index=False)
 
 # data cleaning code (to remove in final version)
-#results = pd.read_csv('out/derived_results/aggregated_results.csv')
-#results = results.loc[results['pollution_pattern'] != 'ImpreciseActivityPolluter']
+#scenario_results = pd.read_csv('out/derived_results/aggregated_results.csv')
+#scenario_results = scenario_results.loc[scenario_results['pollution_pattern'] != 'ImpreciseActivityPolluter']
 #sepsis_impr_act_results = pd.read_csv(
 #    'out/old_results/Sepsis_inductive_discovery_sensitivity_imprecise_activity_tryout.csv')
-#results = pd.concat([results, sepsis_impr_act_results], axis=0, ignore_index=True)
-#results.loc[results['pollution_pattern'] == 'ImpreciseActivityPolluter', 'percentage'] = 1.0
+#scenario_results = pd.concat([scenario_results, sepsis_impr_act_results], axis=0, ignore_index=True)
+#scenario_results.loc[scenario_results['pollution_pattern'] == 'ImpreciseActivityPolluter', 'percentage'] = 1.0
 
-#results.to_csv('out/aggregated_results.csv', index=False)
+#scenario_results.to_csv('out/aggregated_results.csv', index=False)
 
 # call to function to generate all plots
-#results = pd.read_csv('out/derived_results/aggregated_results.csv')
+#scenario_results = pd.read_csv('out/derived_results/aggregated_results.csv')
 
-#plot_results(results, metrics=METRICS, log_model_comb=LOG_MODEL_COMB, dqi_types=['ImpreciseActivityPolluter'], save_plots=True)
+#plot_results(scenario_results, metrics=METRICS, log_model_comb=LOG_MODEL_COMB, dqi_types=['ImpreciseActivityPolluter'], save_plots=True)
 
-# Create tables summarising the results
+# Create tables summarising the aggregated_results
 # take the average over four logs and difference between baseline and 90% pollution
 results = pd.read_csv('out/derived_results/aggregated_results.csv')
 results_dif = pd.DataFrame(columns=['algorithm', 'percentage', 'pollution_pattern'])
 results_dif[['algorithm', 'percentage', 'pollution_pattern']] = results.loc[:,['algorithm', 'percentage', 'pollution_pattern']]
-#results_dif.loc[:,'algorithm'] = results.loc[:,'algorithm']
-for metric in METRICS: # TODO add baseline value
+#results_dif.loc[:,'algorithm'] = scenario_results.loc[:,'algorithm']
+for metric in METRICS: # add baseline value
     for log_model_comb in LOG_MODEL_COMB:
         col_label = metric + '_' + log_model_comb
         results_dif.loc[:,col_label] = results.loc[:,col_label].diff()
 print(results_dif.groupby(by=['pollution_pattern', 'algorithm']).sum())
 print(results_dif)
-#print(results.groupby(by=['pollution_pattern', 'algorithm']).diff())
+#print(scenario_results.groupby(by=['pollution_pattern', 'algorithm']).diff())
 
 
 # or rather take the value for 50% pollution and compare across different log-model combinations
@@ -144,8 +146,34 @@ for col in IGNORE_COLS:
         results_0_5.drop(columns=[col], inplace=True)
     except KeyError:
         pass
-#results_0_5_impr_act = pd.DataFrame()
-#results_0_5_impr_act['precision-tbr'] = results.loc[results['pollution_pattern'] == 'ImpreciseActivityPolluter'] + results.loc[results['pollution_pattern']] #TODO write script to compute value of metrics with ImpreciseActivityPolluter with percentage 0.5 as the average between the baseline values (with 0 DQI) and the value with percentage = 1
+
+ # script to compute value of metrics with ImpreciseActivityPolluter with percentage 0.5 as the average between the baseline values (with 0 DQI) and the value with percentage = 1
+
+results_0_5_impr_act = pd.DataFrame()
+for metric, log_model_comb in product(METRICS, LOG_MODEL_COMB):
+    column = metric + '_' + log_model_comb
+
+    # results with ground truth model should not be mixed with clean log - clean model results
+    if log_model_comb == 'cl-bm':
+        results_0_5_impr_act[column] = results.loc[results[
+                                                    'pollution_pattern'] == 'ImpreciseActivityPolluter', column]
+
+    # for other log-model combinations, we simply take the average between the clean value (with 0% pollution) and the polluted value (with 100% pollution) as proxy for 50% pollution
+    else:
+        results_0_5_impr_act[column] = (results.loc[results[
+                                                        'pollution_pattern'] == 'ImpreciseActivityPolluter', metric + '_cl-cm'] +
+                                        results.loc[
+                                            results['pollution_pattern'] == 'ImpreciseActivityPolluter', column]) / 2
+
+# we format the dataframe to fit with the other results dataframe and concatenate them to obtain a complete slice of the results for pollution level 0.5
+print(list(results['algorithm'].unique()))
+results_0_5_impr_act['algorithm'] = list(results['algorithm'].unique())
+results_0_5_impr_act['percentage'] = 0.5
+results_0_5_impr_act['pollution_pattern'] = 'ImpreciseActivityPolluter'
+
+results_0_5 = pd.concat([results_0_5, results_0_5_impr_act], axis=0)
+
 print(results_0_5)
 results_0_5 = results_0_5.round(4)
 results_0_5.to_csv('out/derived_results/results_0_5.csv', index=False)
+
