@@ -1,0 +1,662 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pnml>
+  <net id="ilp" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text>ilp</text>
+    </name>
+    <page id="n0">
+      <place id="4">
+        <name>
+          <text>4</text>
+        </name>
+      </place>
+      <place id="14">
+        <name>
+          <text>14</text>
+        </name>
+      </place>
+      <place id="16">
+        <name>
+          <text>16</text>
+        </name>
+      </place>
+      <place id="20">
+        <name>
+          <text>20</text>
+        </name>
+      </place>
+      <place id="23">
+        <name>
+          <text>23</text>
+        </name>
+      </place>
+      <place id="6">
+        <name>
+          <text>6</text>
+        </name>
+      </place>
+      <place id="9">
+        <name>
+          <text>9</text>
+        </name>
+      </place>
+      <place id="24">
+        <name>
+          <text>24</text>
+        </name>
+      </place>
+      <place id="10">
+        <name>
+          <text>10</text>
+        </name>
+      </place>
+      <place id="15">
+        <name>
+          <text>15</text>
+        </name>
+      </place>
+      <place id="26">
+        <name>
+          <text>26</text>
+        </name>
+      </place>
+      <place id="2">
+        <name>
+          <text>2</text>
+        </name>
+      </place>
+      <place id="11">
+        <name>
+          <text>11</text>
+        </name>
+      </place>
+      <place id="27">
+        <name>
+          <text>27</text>
+        </name>
+      </place>
+      <place id="29">
+        <name>
+          <text>29</text>
+        </name>
+      </place>
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="3">
+        <name>
+          <text>3</text>
+        </name>
+      </place>
+      <place id="19">
+        <name>
+          <text>19</text>
+        </name>
+      </place>
+      <place id="22">
+        <name>
+          <text>22</text>
+        </name>
+      </place>
+      <place id="25">
+        <name>
+          <text>25</text>
+        </name>
+      </place>
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="5">
+        <name>
+          <text>5</text>
+        </name>
+      </place>
+      <place id="7">
+        <name>
+          <text>7</text>
+        </name>
+      </place>
+      <place id="8">
+        <name>
+          <text>8</text>
+        </name>
+      </place>
+      <place id="12">
+        <name>
+          <text>12</text>
+        </name>
+      </place>
+      <place id="17">
+        <name>
+          <text>17</text>
+        </name>
+      </place>
+      <place id="28">
+        <name>
+          <text>28</text>
+        </name>
+      </place>
+      <place id="13">
+        <name>
+          <text>13</text>
+        </name>
+      </place>
+      <place id="18">
+        <name>
+          <text>18</text>
+        </name>
+      </place>
+      <place id="21">
+        <name>
+          <text>21</text>
+        </name>
+      </place>
+      <transition id="Admission IC">
+        <name>
+          <text>Admission IC</text>
+        </name>
+      </transition>
+      <transition id="ER Sepsis Triage">
+        <name>
+          <text>ER Sepsis Triage</text>
+        </name>
+      </transition>
+      <transition id="CRP">
+        <name>
+          <text>CRP</text>
+        </name>
+      </transition>
+      <transition id="ER Triage">
+        <name>
+          <text>ER Triage</text>
+        </name>
+      </transition>
+      <transition id="IV Liquid">
+        <name>
+          <text>IV Liquid</text>
+        </name>
+      </transition>
+      <transition id="Leucocytes">
+        <name>
+          <text>Leucocytes</text>
+        </name>
+      </transition>
+      <transition id="■">
+        <name>
+          <text>■</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="9b6f4b3d-5e76-4305-83e1-bef4fd6e5e2f"/>
+      </transition>
+      <transition id="▶">
+        <name>
+          <text>▶</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="b724af42-6dc7-4f77-a508-0dc6fbacd811"/>
+      </transition>
+      <transition id="ER Registration">
+        <name>
+          <text>ER Registration</text>
+        </name>
+      </transition>
+      <transition id="Admission NC">
+        <name>
+          <text>Admission NC</text>
+        </name>
+      </transition>
+      <transition id="IV Antibiotics">
+        <name>
+          <text>IV Antibiotics</text>
+        </name>
+      </transition>
+      <transition id="LacticAcid">
+        <name>
+          <text>LacticAcid</text>
+        </name>
+      </transition>
+      <transition id="Release A">
+        <name>
+          <text>Release A</text>
+        </name>
+      </transition>
+      <transition id="Release B">
+        <name>
+          <text>Release B</text>
+        </name>
+      </transition>
+      <transition id="Release C">
+        <name>
+          <text>Release C</text>
+        </name>
+      </transition>
+      <transition id="Release D">
+        <name>
+          <text>Release D</text>
+        </name>
+      </transition>
+      <transition id="Release E">
+        <name>
+          <text>Release E</text>
+        </name>
+      </transition>
+      <transition id="Return ER">
+        <name>
+          <text>Return ER</text>
+        </name>
+      </transition>
+      <arc id="1927558049792" source="10" target="LacticAcid"/>
+      <arc id="1927459876864" source="Release E" target="19"/>
+      <arc id="1927503392768" source="26" target="Release B"/>
+      <arc id="1927558041616" source="7" target="IV Antibiotics"/>
+      <arc id="1927459868688" source="Release E" target="20"/>
+      <arc id="1927503384592" source="22" target="ER Registration"/>
+      <arc id="1927558047776" source="12" target="Release D"/>
+      <arc id="1927459874848" source="ER Sepsis Triage" target="14"/>
+      <arc id="1927503390752" source="Admission IC" target="29"/>
+      <arc id="1927558039600" source="6" target="Release E"/>
+      <arc id="1927503382576" source="Release B" target="24"/>
+      <arc id="1927558045760" source="13" target="Admission IC"/>
+      <arc id="1927459872832" source="Admission IC" target="17"/>
+      <arc id="1927503388736" source="29" target="Release C"/>
+      <arc id="1927592460368" source="Release A" target="4"/>
+      <arc id="1927558037584" source="9" target="Release E"/>
+      <arc id="1927503394896" source="22" target="Release B"/>
+      <arc id="1927503380560" source="29" target="Leucocytes"/>
+      <arc id="1927580090448" source="29" target="Release D"/>
+      <arc id="1927558043744" source="Release E" target="5"/>
+      <arc id="1927459870816" source="19" target="Release C"/>
+      <arc id="1927503386720" source="Release C" target="22"/>
+      <arc id="1927459876976" source="Release C" target="18"/>
+      <arc id="1927503392880" source="21" target="Release A"/>
+      <arc id="1927459868800" source="16" target="Release C"/>
+      <arc id="1927503384704" source="ER Sepsis Triage" target="24"/>
+      <arc id="1927459874960" source="19" target="Admission IC"/>
+      <arc id="1927503390864" source="27" target="Release C"/>
+      <arc id="1927592462496" source="2" target="Release C"/>
+      <arc id="1927503382688" source="23" target="IV Antibiotics"/>
+      <arc id="1927459872944" source="Release C" target="15"/>
+      <arc id="1927503388848" source="Release C" target="24"/>
+      <arc id="1927592460480" source="3" target="Admission IC"/>
+      <arc id="1927558037696" source="CRP" target="10"/>
+      <arc id="1927558052032" source="10" target="Admission IC"/>
+      <arc id="1927459879104" source="Release D" target="16"/>
+      <arc id="1927503380672" source="Admission IC" target="24"/>
+      <arc id="1927503395008" source="27" target="Release B"/>
+      <arc id="1927580090560" source="29" target="Release E"/>
+      <arc id="1927558043856" source="12" target="Release B"/>
+      <arc id="1927459870928" source="CRP" target="14"/>
+      <arc id="1927503386832" source="26" target="Admission IC"/>
+      <arc id="1927558050016" source="11" target="Release B"/>
+      <arc id="1927459877088" source="18" target="Release B"/>
+      <arc id="1927503392992" source="21" target="Release B"/>
+      <arc id="1927558041840" source="Release B" target="12"/>
+      <arc id="1927503384816" source="Release C" target="28"/>
+      <arc id="1927558048000" source="Admission IC" target="5"/>
+      <arc id="1927503390976" source="26" target="Release E"/>
+      <arc id="1927592462608" source="2" target="Release E"/>
+      <arc id="1927558039824" source="8" target="Release C"/>
+      <arc id="1927503382800" source="Release E" target="24"/>
+      <arc id="1927503388960" source="Release B" target="22"/>
+      <arc id="1927558045984" source="6" target="Release B"/>
+      <arc id="1927459873056" source="IV Antibiotics" target="14"/>
+      <arc id="1927592460592" source="3" target="Release C"/>
+      <arc id="1927558037808" source="9" target="Release D"/>
+      <arc id="1927558052144" source="Release E" target="13"/>
+      <arc id="1927459879216" source="Release B" target="19"/>
+      <arc id="1927503395120" source="24" target="Release E"/>
+      <arc id="1927503380784" source="28" target="Release A"/>
+      <arc id="1927580090672" source="29" target="Return ER"/>
+      <arc id="1927558043968" source="10" target="Release B"/>
+      <arc id="1927459871040" source="Release E" target="15"/>
+      <arc id="1927503386944" source="29" target="Admission IC"/>
+      <arc id="1927558050128" source="Release D" target="12"/>
+      <arc id="1927459877200" source="16" target="Release B"/>
+      <arc id="1927558041952" source="Release B" target="7"/>
+      <arc id="1927459869024" source="Release B" target="20"/>
+      <arc id="1927503384928" source="Release B" target="26"/>
+      <arc id="1927558048112" source="IV Antibiotics" target="11"/>
+      <arc id="1927503391088" source="Release E" target="21"/>
+      <arc id="1927592462720" source="Release E" target="3"/>
+      <arc id="1927558039936" source="ER Sepsis Triage" target="9"/>
+      <arc id="1927503382912" source="Admission IC" target="26"/>
+      <arc id="1927503389072" source="IV Antibiotics" target="22"/>
+      <arc id="1927558046096" source="4" target="Release E"/>
+      <arc id="1927459873168" source="Release D" target="15"/>
+      <arc id="1927592460704" source="Release B" target="3"/>
+      <arc id="1927558037920" source="9" target="■"/>
+      <arc id="1927459879328" source="Release E" target="17"/>
+      <arc id="1927503395232" source="22" target="IV Liquid"/>
+      <arc id="1927503380896" source="Release D" target="29"/>
+      <arc id="1927580090784" source="29" target="■"/>
+      <arc id="1927558044080" source="6" target="Release C"/>
+      <arc id="1927459871152" source="Release B" target="15"/>
+      <arc id="1927503387056" source="24" target="Admission IC"/>
+      <arc id="1927558050240" source="IV Antibiotics" target="10"/>
+      <arc id="1927459877312" source="Release D" target="20"/>
+      <arc id="1927503393216" source="Release C" target="25"/>
+      <arc id="1927558042064" source="12" target="IV Antibiotics"/>
+      <arc id="1927459869136" source="13" target="Release E"/>
+      <arc id="1927503385040" source="28" target="Release C"/>
+      <arc id="1927558048224" source="13" target="IV Liquid"/>
+      <arc id="1927459875296" source="20" target="ER Sepsis Triage"/>
+      <arc id="1927503391200" source="24" target="Release D"/>
+      <arc id="1927592462832" source="Release C" target="4"/>
+      <arc id="1927558040048" source="8" target="Release B"/>
+      <arc id="1927503383024" source="▶" target="26"/>
+      <arc id="1927558046208" source="13" target="ER Registration"/>
+      <arc id="1927459873280" source="Admission NC" target="17"/>
+      <arc id="1927503389184" source="20" target="Release E"/>
+      <arc id="1927592460816" source="3" target="Release B"/>
+      <arc id="1927558038032" source="9" target="IV Liquid"/>
+      <arc id="1927558052368" source="Release B" target="10"/>
+      <arc id="1927459879440" source="19" target="Release B"/>
+      <arc id="1927503381008" source="Admission IC" target="21"/>
+      <arc id="1927503395344" source="24" target="CRP"/>
+      <arc id="1927558044192" source="IV Antibiotics" target="5"/>
+      <arc id="1927459871264" source="14" target="Release E"/>
+      <arc id="1927503387168" source="23" target="Admission IC"/>
+      <arc id="1927558050352" source="4" target="Return ER"/>
+      <arc id="1927459877424" source="18" target="Release E"/>
+      <arc id="1927503393328" source="23" target="Release B"/>
+      <arc id="1927558042176" source="10" target="Release A"/>
+      <arc id="1927459869248" source="Admission IC" target="16"/>
+      <arc id="1927503385152" source="Release D" target="28"/>
+      <arc id="1927558048336" source="11" target="Release C"/>
+      <arc id="1927459875408" source="Release E" target="14"/>
+      <arc id="1927503391312" source="Admission IC" target="28"/>
+      <arc id="1927503383136" source="22" target="Admission IC"/>
+      <arc id="1927592462944" source="Release D" target="4"/>
+      <arc id="1927558040160" source="8" target="Release E"/>
+      <arc id="1927558046320" source="12" target="Release C"/>
+      <arc id="1927459873392" source="Release C" target="14"/>
+      <arc id="1927503389296" source="IV Antibiotics" target="29"/>
+      <arc id="1927592460928" source="3" target="Release D"/>
+      <arc id="1927558038144" source="9" target="Release C"/>
+      <arc id="1927459879552" source="13" target="Release C"/>
+      <arc id="1927503381120" source="ER Registration" target="27"/>
+      <arc id="1927503395456" source="29" target="IV Liquid"/>
+      <arc id="1927558044304" source="ER Sepsis Triage" target="13"/>
+      <arc id="1927459871376" source="IV Antibiotics" target="19"/>
+      <arc id="1927503387280" source="▶" target="22"/>
+      <arc id="1927592473248" source="2" target="ER Registration"/>
+      <arc id="1927558050464" source="Release B" target="13"/>
+      <arc id="1927503393440" source="22" target="■"/>
+      <arc id="1927558042288" source="11" target="Release D"/>
+      <arc id="1927459869360" source="Admission IC" target="20"/>
+      <arc id="1927503385264" source="Return ER" target="29"/>
+      <arc id="1927558048448" source="Release B" target="11"/>
+      <arc id="1927459875520" source="Admission IC" target="18"/>
+      <arc id="1927503391424" source="24" target="IV Liquid"/>
+      <arc id="1927503383248" source="23" target="Release D"/>
+      <arc id="1927592463056" source="3" target="Release E"/>
+      <arc id="1927558040272" source="8" target="IV Liquid"/>
+      <arc id="1927558046432" source="Release D" target="10"/>
+      <arc id="1927503389408" source="24" target="Release C"/>
+      <arc id="1927592461040" source="Release D" target="3"/>
+      <arc id="1927558052592" source="5" target="Release E"/>
+      <arc id="1927558038256" source="7" target="Release D"/>
+      <arc id="1927459879664" source="19" target="IV Liquid"/>
+      <arc id="1927503381232" source="Admission IC" target="25"/>
+      <arc id="1927558044416" source="4" target="■"/>
+      <arc id="1927503387392" source="Release B" target="27"/>
+      <arc id="1927558050576" source="10" target="Release E"/>
+      <arc id="1927459877648" source="17" target="Release D"/>
+      <arc id="1927503393552" source="28" target="Release B"/>
+      <arc id="1927558042400" source="7" target="Admission IC"/>
+      <arc id="1927459869472" source="14" target="Release B"/>
+      <arc id="1927503385376" source="Release E" target="25"/>
+      <arc id="1927558048560" source="6" target="Release D"/>
+      <arc id="1927459875632" source="Release B" target="16"/>
+      <arc id="1927503391536" source="IV Liquid" target="23"/>
+      <arc id="1927558040384" source="8" target="Release D"/>
+      <arc id="1927503383360" source="Release B" target="28"/>
+      <arc id="1927558046544" source="6" target="Admission IC"/>
+      <arc id="1927459873616" source="Release D" target="18"/>
+      <arc id="1927503389520" source="Release B" target="29"/>
+      <arc id="1927592475488" source="Admission IC" target="2"/>
+      <arc id="1927558052704" source="Release E" target="4"/>
+      <arc id="1927558038368" source="9" target="Leucocytes"/>
+      <arc id="1927503395680" source="25" target="Release B"/>
+      <arc id="1927503381344" source="Release E" target="29"/>
+      <arc id="1927558044528" source="4" target="Release C"/>
+      <arc id="1927459871600" source="▶" target="18"/>
+      <arc id="1927503387504" source="22" target="Leucocytes"/>
+      <arc id="1927592473472" source="source" target="▶"/>
+      <arc id="1927558050688" source="12" target="Release E"/>
+      <arc id="1927503393664" source="24" target="Return ER"/>
+      <arc id="1927558042512" source="5" target="Release D"/>
+      <arc id="1927459869584" source="17" target="■"/>
+      <arc id="1927503385488" source="Release E" target="26"/>
+      <arc id="1927558048672" source="10" target="CRP"/>
+      <arc id="1927459875744" source="▶" target="19"/>
+      <arc id="1927503391648" source="24" target="■"/>
+      <arc id="1927558040496" source="8" target="Admission IC"/>
+      <arc id="1927503383472" source="23" target="Release C"/>
+      <arc id="1927558046656" source="Release E" target="12"/>
+      <arc id="1927459873728" source="IV Antibiotics" target="17"/>
+      <arc id="1927592461264" source="■" target="sink"/>
+      <arc id="1927558052816" source="Release D" target="5"/>
+      <arc id="1927558038480" source="9" target="Admission IC"/>
+      <arc id="1927459879888" source="18" target="Release C"/>
+      <arc id="1927503381456" source="Release D" target="26"/>
+      <arc id="1927503395792" source="Admission NC" target="28"/>
+      <arc id="1927558044640" source="Admission IC" target="10"/>
+      <arc id="1927459871712" source="17" target="Release E"/>
+      <arc id="1927558050800" source="7" target="Release B"/>
+      <arc id="1927459877872" source="Release C" target="17"/>
+      <arc id="1927503393776" source="22" target="Release E"/>
+      <arc id="1927558042624" source="Admission NC" target="6"/>
+      <arc id="1927459869696" source="16" target="Admission IC"/>
+      <arc id="1927503385600" source="Release D" target="22"/>
+      <arc id="1927558048784" source="Release C" target="13"/>
+      <arc id="1927459875856" source="19" target="LacticAcid"/>
+      <arc id="1927503391760" source="20" target="Release B"/>
+      <arc id="1927558040608" source="Release E" target="8"/>
+      <arc id="1927503383584" source="Release C" target="29"/>
+      <arc id="1927558046768" source="ER Sepsis Triage" target="10"/>
+      <arc id="1927459873840" source="LacticAcid" target="15"/>
+      <arc id="1927503389744" source="ER Triage" target="25"/>
+      <arc id="1927592461376" source="Admission IC" target="3"/>
+      <arc id="1927558038592" source="9" target="Release B"/>
+      <arc id="1927558052928" source="11" target="Release E"/>
+      <arc id="1927459880000" source="15" target="Release B"/>
+      <arc id="1927503395904" source="IV Liquid" target="21"/>
+      <arc id="1927503381568" source="Release C" target="21"/>
+      <arc id="1927558044752" source="4" target="Admission IC"/>
+      <arc id="1927459871824" source="14" target="Admission IC"/>
+      <arc id="1927503387728" source="26" target="ER Registration"/>
+      <arc id="1927558050912" source="Release E" target="11"/>
+      <arc id="1927459877984" source="18" target="ER Triage"/>
+      <arc id="1927503393888" source="26" target="Release C"/>
+      <arc id="1927558042736" source="Admission IC" target="13"/>
+      <arc id="1927459869808" source="15" target="Release D"/>
+      <arc id="1927503385712" source="29" target="Release B"/>
+      <arc id="1927558048896" source="▶" target="13"/>
+      <arc id="1927459875968" source="Release B" target="17"/>
+      <arc id="1927503391872" source="Release D" target="21"/>
+      <arc id="1927503383696" source="Release B" target="21"/>
+      <arc id="1927558046880" source="5" target="Release B"/>
+      <arc id="1927459873952" source="Admission IC" target="14"/>
+      <arc id="1927503389856" source="Admission IC" target="22"/>
+      <arc id="1927592475824" source="2" target="Admission IC"/>
+      <arc id="1927592461488" source="2" target="Release D"/>
+      <arc id="1927558053040" source="Release D" target="6"/>
+      <arc id="1927558038704" source="Release E" target="9"/>
+      <arc id="1927459880112" source="17" target="Release B"/>
+      <arc id="1927503381680" source="28" target="ER Triage"/>
+      <arc id="1927558044864" source="4" target="Release D"/>
+      <arc id="1927459871936" source="Release D" target="19"/>
+      <arc id="1927503387840" source="Release D" target="23"/>
+      <arc id="1927558051024" source="Release C" target="7"/>
+      <arc id="1927459878096" source="20" target="Admission IC"/>
+      <arc id="1927503394000" source="Return ER" target="24"/>
+      <arc id="1927592465632" source="2" target="Release B"/>
+      <arc id="1927459869920" source="Admission IC" target="15"/>
+      <arc id="1927503385824" source="Release B" target="25"/>
+      <arc id="1927558049008" source="10" target="IV Liquid"/>
+      <arc id="1927459876080" source="17" target="Admission IC"/>
+      <arc id="1927503391984" source="22" target="Release C"/>
+      <arc id="1927558040832" source="Release D" target="8"/>
+      <arc id="1927592469776" source="Release B" target="2"/>
+      <arc id="1927558046992" source="Release D" target="7"/>
+      <arc id="1927459874064" source="18" target="Admission IC"/>
+      <arc id="1927503389968" source="Release E" target="27"/>
+      <arc id="1927592461600" source="Release C" target="3"/>
+      <arc id="1927558053152" source="6" target="Release A"/>
+      <arc id="1927558038816" source="Release D" target="9"/>
+      <arc id="1927459880224" source="15" target="Release C"/>
+      <arc id="1927503396128" source="Release E" target="22"/>
+      <arc id="1927503381792" source="Release B" target="23"/>
+      <arc id="1927459872048" source="19" target="Release D"/>
+      <arc id="1927592467760" source="Release E" target="2"/>
+      <arc id="1927558044976" source="4" target="Release B"/>
+      <arc id="1927503387952" source="25" target="Release E"/>
+      <arc id="1927558051136" source="Release D" target="11"/>
+      <arc id="1927459878208" source="15" target="■"/>
+      <arc id="1927503394112" source="23" target="Release E"/>
+      <arc id="1927503385936" source="20" target="Release D"/>
+      <arc id="1927558042960" source="Release E" target="7"/>
+      <arc id="1927459870032" source="Release C" target="16"/>
+      <arc id="1927459876192" source="19" target="ER Registration"/>
+      <arc id="1927503392096" source="Release C" target="26"/>
+      <arc id="1927558040944" source="Admission IC" target="8"/>
+      <arc id="1927503383920" source="27" target="ER Triage"/>
+      <arc id="1927558047104" source="Admission IC" target="11"/>
+      <arc id="1927459874176" source="16" target="Release A"/>
+      <arc id="1927503390080" source="28" target="Admission IC"/>
+      <arc id="1927592461712" source="Admission IC" target="4"/>
+      <arc id="1927558053264" source="7" target="Release C"/>
+      <arc id="1927558038928" source="IV Antibiotics" target="9"/>
+      <arc id="1927459880336" source="14" target="Release D"/>
+      <arc id="1927503396240" source="IV Antibiotics" target="26"/>
+      <arc id="1927503381904" source="28" target="Admission NC"/>
+      <arc id="1927459872160" source="15" target="Admission IC"/>
+      <arc id="1927503388064" source="25" target="■"/>
+      <arc id="1927459878320" source="ER Sepsis Triage" target="19"/>
+      <arc id="1927503394224" source="25" target="Release C"/>
+      <arc id="1927558043072" source="6" target="Admission NC"/>
+      <arc id="1927459870144" source="17" target="Admission NC"/>
+      <arc id="1927503386048" source="28" target="Release D"/>
+      <arc id="1927558049232" source="LacticAcid" target="10"/>
+      <arc id="1927459876304" source="LacticAcid" target="19"/>
+      <arc id="1927503392208" source="Release E" target="28"/>
+      <arc id="1927558041056" source="Release C" target="8"/>
+      <arc id="1927503384032" source="Release D" target="25"/>
+      <arc id="1927558047216" source="Release C" target="12"/>
+      <arc id="1927459874288" source="CRP" target="19"/>
+      <arc id="1927503390192" source="26" target="Release D"/>
+      <arc id="1927558053376" source="Release C" target="6"/>
+      <arc id="1927558039040" source="Release C" target="9"/>
+      <arc id="1927459880448" source="Release E" target="18"/>
+      <arc id="1927503382016" source="CRP" target="24"/>
+      <arc id="1927503396352" source="Release C" target="27"/>
+      <arc id="1927592467984" source="▶" target="2"/>
+      <arc id="1927558045200" source="11" target="Release A"/>
+      <arc id="1927459872272" source="16" target="Release E"/>
+      <arc id="1927503388176" source="27" target="Admission IC"/>
+      <arc id="1927558051360" source="Release D" target="13"/>
+      <arc id="1927459878432" source="20" target="ER Registration"/>
+      <arc id="1927503394336" source="ER Sepsis Triage" target="22"/>
+      <arc id="1927558043184" source="IV Antibiotics" target="6"/>
+      <arc id="1927459870256" source="14" target="Release C"/>
+      <arc id="1927503386160" source="21" target="Release D"/>
+      <arc id="1927558049344" source="IV Liquid" target="12"/>
+      <arc id="1927459876416" source="LacticAcid" target="16"/>
+      <arc id="1927503392320" source="21" target="Release C"/>
+      <arc id="1927558041168" source="ER Sepsis Triage" target="8"/>
+      <arc id="1927503384144" source="27" target="Release D"/>
+      <arc id="1927558047328" source="10" target="Release C"/>
+      <arc id="1927459874400" source="14" target="IV Liquid"/>
+      <arc id="1927503390304" source="21" target="Release E"/>
+      <arc id="1927592461936" source="3" target="■"/>
+      <arc id="1927558053488" source="Admission IC" target="6"/>
+      <arc id="1927558039152" source="Leucocytes" target="9"/>
+      <arc id="1927459880560" source="▶" target="20"/>
+      <arc id="1927503382128" source="21" target="Admission IC"/>
+      <arc id="1927503396464" source="Release D" target="27"/>
+      <arc id="1927558045312" source="Admission IC" target="12"/>
+      <arc id="1927459872384" source="14" target="CRP"/>
+      <arc id="1927503388288" source="IV Antibiotics" target="28"/>
+      <arc id="1927558051472" source="Release A" target="12"/>
+      <arc id="1927459878544" source="19" target="Release E"/>
+      <arc id="1927503394448" source="24" target="Release B"/>
+      <arc id="1927558043296" source="12" target="Admission IC"/>
+      <arc id="1927503386272" source="Release A" target="25"/>
+      <arc id="1927558049456" source="10" target="Release D"/>
+      <arc id="1927459876528" source="15" target="Release E"/>
+      <arc id="1927558041280" source="Release B" target="8"/>
+      <arc id="1927503384256" source="25" target="ER Sepsis Triage"/>
+      <arc id="1927558047440" source="Release C" target="10"/>
+      <arc id="1927459874512" source="Release B" target="18"/>
+      <arc id="1927503396576" source="Admission IC" target="23"/>
+      <arc id="1927592476384" source="Release D" target="2"/>
+      <arc id="1927558053600" source="5" target="■"/>
+      <arc id="1927558039264" source="Release B" target="9"/>
+      <arc id="1927459880672" source="Release C" target="20"/>
+      <arc id="1927503382240" source="25" target="Release D"/>
+      <arc id="1927558045424" source="Return ER" target="4"/>
+      <arc id="1927459872496" source="Release B" target="14"/>
+      <arc id="1927503388400" source="Release C" target="23"/>
+      <arc id="1927558051584" source="Release C" target="11"/>
+      <arc id="1927459878656" source="16" target="Release D"/>
+      <arc id="1927503394560" source="25" target="Admission IC"/>
+      <arc id="1927558043408" source="5" target="Admission IC"/>
+      <arc id="1927459870480" source="Release C" target="19"/>
+      <arc id="1927558049568" source="Release C" target="5"/>
+      <arc id="1927459876640" source="19" target="CRP"/>
+      <arc id="1927558041392" source="7" target="Release E"/>
+      <arc id="1927459868464" source="Admission IC" target="19"/>
+      <arc id="1927503384368" source="28" target="Release E"/>
+      <arc id="1927558047552" source="5" target="Release C"/>
+      <arc id="1927459874624" source="14" target="■"/>
+      <arc id="1927503390528" source="27" target="Release E"/>
+      <arc id="1927503396688" source="20" target="Release C"/>
+      <arc id="1927503382352" source="22" target="Release D"/>
+      <arc id="1927592462160" source="Release A" target="3"/>
+      <arc id="1927558053712" source="Admission IC" target="7"/>
+      <arc id="1927558039376" source="Admission IC" target="9"/>
+      <arc id="1927459880784" source="Release D" target="14"/>
+      <arc id="1927459872608" source="Release E" target="16"/>
+      <arc id="1927503388512" source="Admission IC" target="27"/>
+      <arc id="1927558051696" source="Release E" target="6"/>
+      <arc id="1927459878768" source="13" target="Release D"/>
+      <arc id="1927503394672" source="Release D" target="24"/>
+      <arc id="1927592466304" source="Release C" target="2"/>
+      <arc id="1927558043520" source="Release B" target="5"/>
+      <arc id="1927459870592" source="19" target="Release A"/>
+      <arc id="1927558049680" source="ER Sepsis Triage" target="7"/>
+      <arc id="1927459876752" source="13" target="Release B"/>
+      <arc id="1927503392656" source="26" target="Release A"/>
+      <arc id="1927558041504" source="Release A" target="8"/>
+      <arc id="1927459868576" source="Release D" target="17"/>
+      <arc id="1927503384480" source="IV Antibiotics" target="24"/>
+      <arc id="1927558047664" source="Release E" target="10"/>
+      <arc id="1927459874736" source="17" target="Release C"/>
+      <arc id="1927503390640" source="Leucocytes" target="22"/>
+      <arc id="1927592462272" source="Release B" target="4"/>
+      <arc id="1927558039488" source="8" target="■"/>
+      <arc id="1927503382464" source="ER Sepsis Triage" target="29"/>
+      <arc id="1927558045648" source="12" target="■"/>
+      <arc id="1927459872720" source="18" target="Release D"/>
+      <arc id="1927503388624" source="Leucocytes" target="29"/>
+      <arc id="1927558051808" source="Release B" target="6"/>
+      <arc id="1927459878880" source="ER Triage" target="20"/>
+      <arc id="1927503394784" source="ER Registration" target="28"/>
+      <arc id="1927558043632" source="11" target="Admission IC"/>
+      <arc id="1927503386608" source="Release E" target="23"/>
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>

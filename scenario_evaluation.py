@@ -18,23 +18,43 @@ INPUTS = [#("Sepsis Cases - Event Log_0_1_perfect_fitting_cases.xes", "Sepsis Ca
           #("Sepsis Cases - Event Log_0_5_perfect_fitting_cases.xes", "Sepsis Cases - Event Log_0_5_inductive.pnml")
             ]
 
-ALGORITHMS = ["IM_0.0", "IM_0.2", "IM_0.4", "ALPHA", "ILP_1.0", "ILP_0.8", "ILP_0.6"]
+ALGORITHMS = ["IM_0.0", "IM_0.1", "IM_0.2", "IM_0.3", "IM_0.4", "IM_0.5", "ILP_1.0", "ILP_0.9", "ILP_0.8", "ILP_0.7", "ILP_0.6", "ILP_0.5"]
 
 def run_algorithm(alg_ID, log):
     if alg_ID == "IM_0.0":
         return  pm4py.discover_petri_net_inductive(log, noise_threshold=0.0)
+    elif alg_ID == "IM_0.1":
+        return  pm4py.discover_petri_net_inductive(log, noise_threshold=0.1)
     elif alg_ID == "IM_0.2":
         return  pm4py.discover_petri_net_inductive(log, noise_threshold=0.2)
+    elif alg_ID == "IM_0.3":
+        return  pm4py.discover_petri_net_inductive(log, noise_threshold=0.3)
     elif alg_ID == "IM_0.4":
         return pm4py.discover_petri_net_inductive(log, noise_threshold=0.4)
+    elif alg_ID == "IM_0.5":
+        return  pm4py.discover_petri_net_inductive(log, noise_threshold=0.5)
+    elif alg_ID == "IM_0.6":
+        return pm4py.discover_petri_net_inductive(log, noise_threshold=0.6)
+    elif alg_ID == "IM_0.8":
+        return pm4py.discover_petri_net_inductive(log, noise_threshold=0.8)
     elif alg_ID == "ALPHA":
         return pm4py.discovery.discover_petri_net_alpha(log)
     elif alg_ID == "ILP_1.0":
         return pm4py.discovery.discover_petri_net_ilp(log, 1.0)
+    elif alg_ID == "ILP_0.9":
+        return pm4py.discovery.discover_petri_net_ilp(log, 0.9)
     elif alg_ID == "ILP_0.8":
         return pm4py.discovery.discover_petri_net_ilp(log, 0.8)
+    elif alg_ID == "ILP_0.7":
+        return pm4py.discovery.discover_petri_net_ilp(log, 0.7)
     elif alg_ID == "ILP_0.6":
         return pm4py.discovery.discover_petri_net_ilp(log, 0.6)
+    elif alg_ID == "ILP_0.5":
+        return pm4py.discovery.discover_petri_net_ilp(log, 0.5)
+    elif alg_ID == "ILP_0.4":
+        return pm4py.discovery.discover_petri_net_ilp(log, 0.4)
+    elif alg_ID == "ILP_0.2":
+        return pm4py.discovery.discover_petri_net_ilp(log, 0.2)
     else:
         raise ValueError("ERROR: provided algorithm " + alg_ID + " unknown")
 
@@ -81,6 +101,7 @@ def scenario_analysis_discovery(clean_log, baseline_model, baseline_im, baseline
 
         scenario_results.append({"algorithm": algorithm,
                                     "pollution_type": "None",
+                                    "setting": 'cl-cm',
                                     "fitness_tbr": fitness_tbr['average_trace_fitness'],
                                     "precision_tbr": precision_tbr,
                                     "generalization_tbr": generalization_tbr})
@@ -99,6 +120,7 @@ def scenario_analysis_discovery(clean_log, baseline_model, baseline_im, baseline
 
         # conduct analysis on polluted log and retrieve relevant metrics
         polluted_model, polluted_im, polluted_fm = run_algorithm(algorithm, polluted_log)
+        pm4py.vis.view_petri_net(polluted_model, polluted_im, polluted_fm)
 
         # polluted log - token-based replay metrics
         polluted_fitness_tbr = pm4py.conformance.fitness_token_based_replay(polluted_log, polluted_model,
@@ -109,17 +131,35 @@ def scenario_analysis_discovery(clean_log, baseline_model, baseline_im, baseline
         polluted_generalization_tbr = pm4py.conformance.generalization_tbr(polluted_log, polluted_model,
                                                                            polluted_im, polluted_fm)
 
+        scenario_results.append({"algorithm": algorithm,
+                                    "pollution_type": pollution_types,
+                                    "setting": 'pl-pm',
+                                    "percentage": pollution_percentages,
+                                    "fitness_tbr": polluted_fitness_tbr['average_trace_fitness'],
+                                    "precision_tbr": polluted_precision_tbr,
+                                    "generalization_tbr": polluted_generalization_tbr})
+
+        polluted_fitness_tbr_cl_pm = pm4py.conformance.fitness_token_based_replay(clean_log, polluted_model,
+                                                                                  polluted_im, polluted_fm)
+        polluted_precision_tbr_cl_pm = pm4py.conformance.precision_token_based_replay(clean_log, polluted_model,
+                                                                                      polluted_im, polluted_fm)
+        polluted_generalization_tbr_cl_pm = pm4py.conformance.generalization_tbr(clean_log, polluted_model, polluted_im,
+                                                                                 polluted_fm)
+
+
+
         # polluted log - alignment-based metrics
         # polluted_fitness_alignment = pm4py.conformance.fitness_alignments(polluted_log, model, im, fm)
         # polluted_precision_alignment = pm4py.conformance.precision_alignments(polluted_log, model, im, fm)
         # polluted_generalization_alignment = pm4py.conformance.generalization_tbr(polluted_log, model, im, fm)
 
         scenario_results.append({"algorithm": algorithm,
-                                    "pollution_type": pollution_types,
-                                    "percentage": pollution_percentages,
-                                    "fitness_tbr": polluted_fitness_tbr['average_trace_fitness'],
-                                    "precision_tbr": polluted_precision_tbr,
-                                    "generalization_tbr": polluted_generalization_tbr})
+                                 "pollution_type": pollution_types,
+                                 "setting": 'cl-pm',
+                                 "percentage": pollution_percentages,
+                                 "fitness_tbr": polluted_fitness_tbr_cl_pm['average_trace_fitness'],
+                                 "precision_tbr": polluted_precision_tbr_cl_pm,
+                                 "generalization_tbr": polluted_generalization_tbr_cl_pm})
 
     return scenario_results
 
@@ -130,7 +170,7 @@ def apply_optimised_discovery(results_path, original_log):
 
     # loop over the scenario_results of the sensitivity analysis to find out algorithm with best f1-score
     for row in results.index:
-        if (results.loc[row, 'pollution_type'] is not None) and (results.loc[row, 'pollution_type'] not in ['nan', np.nan]):
+        if results.loc[row, 'setting'] == 'cl-pm': #(results.loc[row, 'pollution_type'] is not None) and (results.loc[row, 'pollution_type'] not in ['nan', np.nan]):
             model = results.loc[row,:]
             f1_score = 2/(1/(model['fitness_tbr']) + 1/(model['precision_tbr']))
             if f1_score > best_f1:
@@ -167,7 +207,7 @@ def apply_optimised_discovery(results_path, original_log):
 for (in_log, in_model) in INPUTS:
     out_path = in_model.removesuffix('.pnml')
 
-    """
+
     #Load ground truth log
     log = pm4py.read_xes(os.path.join(INPUT_PATH, 'cleaned_event_logs', in_log), return_legacy_log_object=True)
 
@@ -187,14 +227,14 @@ for (in_log, in_model) in INPUTS:
 
     polluted_df = pandas.DataFrame(scenario_results)
     polluted_df['f1-score'] = 2/((1/polluted_df['fitness_tbr']) + (1/polluted_df['precision_tbr']))
-    polluted_df.round(4)
-    polluted_df.to_csv(os.path.join("scenario_results", out_path + "_scenario_results.csv"), index = False)
-    """
+    polluted_df = polluted_df.round(4)
+    polluted_df.to_csv(os.path.join("out/scenario_results", out_path + "_scenario_results.csv"), index = False)
+
 
     # Apply optimised process discovery
     original_log = pm4py.read_xes(os.path.join(INPUT_PATH, 'original_event_logs', 'Sepsis Cases - Event Log.xes.gz'))
 
-    optimised_df = apply_optimised_discovery(os.path.join('scenario_results', out_path + '_scenario_results.csv'),
+    optimised_df = apply_optimised_discovery(os.path.join('out/scenario_results', out_path + '_scenario_results.csv'),
                                              original_log)
-    optimised_df.to_csv(os.path.join("scenario_results", out_path + "_optimised_scenario_results.csv"),
+    optimised_df.to_csv(os.path.join("out/scenario_results", out_path + "_optimised_scenario_results.csv"),
                         index=False)

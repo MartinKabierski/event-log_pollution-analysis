@@ -2,11 +2,11 @@ import pandas
 from log_pollution import *
 
 INPUTS = [
-            ("RTFM_perfect_fitting_cases.xes", "RTFM_inductive.pnml"),
-            ("Sepsis_perfect_fitting_cases.xes", "Sepsis_inductive.pnml"),
-            ("BPI_Challenge_2012_perfect_fitting_cases.xes", "BPI_Challenge_2012_inductive.pnml"),
-            ("Helpdesk_perfect_fitting_cases.xes", "Helpdesk_inductive.pnml"),
-            ("HospitalBilling_perfect_fitting_cases.xes", "HospitalBilling_inductive.pnml")
+            #("RTFM_perfect_fitting_cases.xes", "RTFM_inductive.pnml"),
+            ("Sepsis_perfect_fitting_cases.xes", "Sepsis_inductive.pnml")#,
+            #("BPI_Challenge_2012_perfect_fitting_cases.xes", "BPI_Challenge_2012_inductive.pnml"),
+            #("Helpdesk_perfect_fitting_cases.xes", "Helpdesk_inductive.pnml"),
+            #("HospitalBilling_perfect_fitting_cases.xes", "HospitalBilling_inductive.pnml")
 ]
 
 ALGORITHMS = ["IM_0.0", "IM_0.2", "ALPHA", "ILP_0.8", "ILP_1.0"]
@@ -61,6 +61,9 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
             #coduct analysis on polluted log and retrieve relevant metrics
             polluted_model, polluted_im, polluted_fm = run_algorithm(polluted_log, algorithm)
 
+            pm4py.vis.save_vis_petri_net(polluted_model, polluted_im, polluted_fm,
+                                         'out/scenario_results/Sepsis Cases - Event Log_0_2_inductive_imprecise_activity.png')
+
             #polluted log vs polluted model
             print("> Polluted Log vs Polluted Model")
             polluted_fitness_tbr_pl_pm = pm4py.conformance.fitness_token_based_replay(polluted_log, polluted_model, polluted_im, polluted_fm)
@@ -74,7 +77,7 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
             polluted_generalization_tbr_pl_cm = pm4py.conformance.generalization_tbr(polluted_log, clean_model, clean_im, clean_fm)
 
             #clean log vs polluted model
-            print("> Clean Log vs Clean Model")
+            print("> Clean Log vs Polluted Model")
             polluted_fitness_tbr_cl_pm = pm4py.conformance.fitness_token_based_replay(clean_log, polluted_model, polluted_im, polluted_fm)
             polluted_precision_tbr_cl_pm = pm4py.conformance.precision_token_based_replay(clean_log, polluted_model, polluted_im, polluted_fm)
             polluted_generalization_tbr_cl_pm = pm4py.conformance.generalization_tbr(clean_log, polluted_model, polluted_im, polluted_fm)
@@ -98,7 +101,7 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
             #polluter properties
             results.update(polluter.get_properties())
 
-            #sensitivity results
+            #sensitivity scenario_results
 
             # Clean Log vs. Baseline Model
             results["fitness_tbr_cl-bm"] = str(fitness_tbr_cl_bm['average_trace_fitness'])
@@ -135,12 +138,12 @@ def sensitivity_analysis_discovery(clean_log, baseline_model, baseline_im, basel
 for (in_log, in_model) in INPUTS:
 
     #Load ground truth log
-    log = pm4py.read_xes(os.path.join("in","logs",in_log), return_legacy_log_object=True)
+    log = pm4py.read_xes('GT_log_creation/cleaned_event_logs/Sepsis Cases - Event Log_0_2_perfect_fitting_cases.xes', return_legacy_log_object=True)
     #Load ground truth model
-    net, im, fm = pm4py.read_pnml(os.path.join("in","models",in_model))
+    net, im, fm = pm4py.read_pnml('GT_log_creation/process_models/Sepsis Cases - Event Log_0_2_inductive.pnml')
 
     results = sensitivity_analysis_discovery(log, net, im, fm, in_log)
 
-    #save results as csv
+    #save scenario_results as csv
     polluted_df = pandas.DataFrame(results)
-    polluted_df.to_csv(os.path.join("out", in_model+"discovery_sensitivity.csv"), index = False)
+    polluted_df.to_csv(os.path.join("out", in_model+"discovery_sensitivity_impr_act_tryout.csv"), index = False)

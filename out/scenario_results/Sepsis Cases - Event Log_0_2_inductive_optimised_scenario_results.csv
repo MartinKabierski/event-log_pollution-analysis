@@ -1,0 +1,2 @@
+algorithm,scenario,fitness_tbr,precision_tbr,generalization_tbr
+ILP_0.5,scenario_results\Sepsis Cases - Event Log_0_2_inductive_scenario_results.csv,0.861222304343256,0.7482466048490899,0.9189993221256291

@@ -240,7 +240,8 @@ class DeleteTracePolluter(LogPolluter):
             #del log_copy[selected_trace:selected_trace+1]
             #log_copy = log_copy[:selected_trace] + log_copy[selected_trace+1:]
             new_log = EventLog(log_copy[:selected_trace])
-            new_log.append(log_copy[selected_trace+1:])
+            for trace in log_copy[selected_trace+1:]:
+                new_log.append(trace)#)
             log_copy = new_log
             #log.pop(random.choice(log_copy))
 
@@ -526,33 +527,33 @@ class ImpreciseActivityPolluter(LogPolluter):
 def create_pollution_testbed():
     percentages = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
 
-    insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
-    insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
-    insert_alien_activity_polluters_sqrt = [InsertAlienActivityPolluter(x,"sqrt") for x in percentages]
-    insert_alien_activity_polluters_fixed = [InsertAlienActivityPolluter(x,0.2) for x in percentages]
+    #insert_random_activity_polluters = [InsertRandomActivityPolluter(x) for x in percentages]
+    #insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in percentages]
+    #insert_alien_activity_polluters_sqrt = [InsertAlienActivityPolluter(x,"sqrt") for x in percentages]
+    #insert_alien_activity_polluters_fixed = [InsertAlienActivityPolluter(x,0.2) for x in percentages]
 
 
-    replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
-    replace_duplicate_activity_polluters = [ReplaceDuplicateActivityPolluter(x) for x in percentages]
-    replace_alien_activity_polluters = [ReplaceAlienActivityPolluter(x) for x in percentages]
+    #replace_random_activity_polluters = [ReplaceRandomActivityPolluter(x) for x in percentages]
+    #replace_duplicate_activity_polluters = [ReplaceDuplicateActivityPolluter(x) for x in percentages]
+    #replace_alien_activity_polluters = [ReplaceAlienActivityPolluter(x) for x in percentages]
 
-    delete_random_activity_polluters = [DeleteActivityPolluter(x) for x in percentages]
+    #insert_duplicate_activity_polluters = [InsertDuplicateActivityPolluter(x) for x in [0.1]]
 
-    insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in percentages]
-    delete_random_trace_polluters = [DeleteTracePolluter(x) for x in percentages]
+    #insert_duplicate_trace_polluters = [InsertDuplicateTracePolluter(x) for x in [0.1]]
+    delete_random_trace_polluters = [DeleteTracePolluter(x) for x in [0.25]]
 
     imprecise_activity_polluters = [ImpreciseActivityPolluter(precise_activity_labels=['Release A', 'Release B', 'Release C', 'Release D', 'Release E'], new_activity_label='Release')]
-    delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=120) for x in percentages]
-    aggregate_timestamp_polluters_hourly = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
-    aggregate_timestamp_polluters_daily = [AggregatedEventLoggingPolluter(percentage=x, target_precision='day') for x in percentages]
+    delay_event_logging_polluters = [DelayedEventLoggingPolluter(x, mean_delay=90) for x in [1]]
+    #aggregate_timestamp_polluters_hourly = [AggregatedEventLoggingPolluter(percentage=x, target_precision='hour') for x in percentages]
+    #aggregate_timestamp_polluters_daily = [AggregatedEventLoggingPolluter(percentage=x, target_precision='day') for x in percentages]
 
-    precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
+    #precise_activity_polluters = [PreciseActivityPolluter(percentage=x) for x in percentages]
 
-    return (insert_alien_activity_polluters_sqrt +
-            aggregate_timestamp_polluters_hourly +
-            aggregate_timestamp_polluters_daily +
+    return (#insert_alien_activity_polluters_sqrt +
+            #aggregate_timestamp_polluters_hourly +
+            #aggregate_timestamp_polluters_daily +
             delay_event_logging_polluters +
-            delete_random_activity_polluters +
+            delete_random_trace_polluters +
             imprecise_activity_polluters)
             #insert_alien_activity_polluters_fixed)
 

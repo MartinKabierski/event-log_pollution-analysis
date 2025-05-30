@@ -1,0 +1,38 @@
+algorithm,pollution_type,fitness_tbr,precision_tbr,generalization_tbr,setting,percentage,f1-score
+,,1.0,0.3866,0.8289,,,0.5576
+IM_0.0,,1.0,0.4103,0.8825,cl-cm,,0.5818
+IM_0.0,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",1.0,0.3045,0.9385,pl-pm,"[1, 0.25, None]",0.4669
+IM_0.0,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9996,0.3394,0.9143,cl-pm,"[1, 0.25, None]",0.5067
+IM_0.1,,1.0,0.4103,0.8825,cl-cm,,0.5818
+IM_0.1,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9921,0.3195,0.8903,pl-pm,"[1, 0.25, None]",0.4833
+IM_0.1,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8053,0.3571,0.6497,cl-pm,"[1, 0.25, None]",0.4947
+IM_0.2,,0.9989,0.4103,0.8842,cl-cm,,0.5816
+IM_0.2,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.992,0.3163,0.9235,pl-pm,"[1, 0.25, None]",0.4797
+IM_0.2,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8059,0.3546,0.7098,cl-pm,"[1, 0.25, None]",0.4925
+IM_0.3,,0.975,0.4101,0.8793,cl-cm,,0.5774
+IM_0.3,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9448,0.4899,0.9465,pl-pm,"[1, 0.25, None]",0.6452
+IM_0.3,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8687,0.4564,0.8309,cl-pm,"[1, 0.25, None]",0.5984
+IM_0.4,,0.951,0.4118,0.9069,cl-cm,,0.5747
+IM_0.4,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9637,0.331,0.8892,pl-pm,"[1, 0.25, None]",0.4928
+IM_0.4,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.816,0.3697,0.6954,cl-pm,"[1, 0.25, None]",0.5088
+IM_0.5,,0.9455,0.4119,0.9108,cl-cm,,0.5738
+IM_0.5,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9495,0.3231,0.9302,pl-pm,"[1, 0.25, None]",0.4822
+IM_0.5,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8049,0.3624,0.7997,cl-pm,"[1, 0.25, None]",0.4998
+ILP_1.0,,1.0,0.1919,0.9088,cl-cm,,0.322
+ILP_1.0,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",1.0,0.2146,0.9538,pl-pm,"[1, 0.25, None]",0.3533
+ILP_1.0,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",1.0,0.238,0.891,cl-pm,"[1, 0.25, None]",0.3844
+ILP_0.9,,0.9719,0.183,0.9088,cl-cm,,0.308
+ILP_0.9,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",1.0,0.2138,0.9532,pl-pm,"[1, 0.25, None]",0.3523
+ILP_0.9,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",1.0,0.2379,0.891,cl-pm,"[1, 0.25, None]",0.3844
+ILP_0.8,,0.9546,0.2715,0.9087,cl-cm,,0.4228
+ILP_0.8,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9925,0.2661,0.9527,pl-pm,"[1, 0.25, None]",0.4197
+ILP_0.8,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.7966,0.2876,0.8223,cl-pm,"[1, 0.25, None]",0.4226
+ILP_0.7,,0.945,0.4524,0.9088,cl-cm,,0.6118
+ILP_0.7,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9839,0.2848,0.9533,pl-pm,"[1, 0.25, None]",0.4418
+ILP_0.7,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.83,0.3048,0.8223,cl-pm,"[1, 0.25, None]",0.4459
+ILP_0.6,,0.9301,0.5368,0.9088,cl-cm,,0.6807
+ILP_0.6,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.9246,0.4674,0.9529,pl-pm,"[1, 0.25, None]",0.6209
+ILP_0.6,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8005,0.4648,0.8864,cl-pm,"[1, 0.25, None]",0.5881
+ILP_0.5,,0.9014,0.6259,0.9088,cl-cm,,0.7388
+ILP_0.5,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8744,0.6494,0.9536,pl-pm,"[1, 0.25, None]",0.7453
+ILP_0.5,"['DelayedEventLoggingPolluter', 'DeleteTracePolluter', 'ImpreciseActivityPolluter']",0.8171,0.5555,0.886,cl-pm,"[1, 0.25, None]",0.6614

@@ -126,7 +126,7 @@ def plot_results(results, metrics=['fitness_tbr'], log_model_comb= ['cm-pl'], dq
 
 # Create tables summarising the aggregated_results
 # take the average over four logs and difference between baseline and 90% pollution
-results = pd.read_csv('out/derived_results/aggregated_results.csv')
+results = pd.read_csv('out/sensitivity_results/derived_results/aggregated_results.csv')
 results_dif = pd.DataFrame(columns=['algorithm', 'percentage', 'pollution_pattern'])
 results_dif[['algorithm', 'percentage', 'pollution_pattern']] = results.loc[:,['algorithm', 'percentage', 'pollution_pattern']]
 #results_dif.loc[:,'algorithm'] = scenario_results.loc[:,'algorithm']
