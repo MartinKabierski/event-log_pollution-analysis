@@ -584,3 +584,60 @@ def create_pollution_testbed():
 #    polluted_generalization_tbr = pm4py.conformance.generalization_tbr(p2, m, im, fm)
 
 #    print(polluted_fitness_tbr['average_trace_fitness'], polluted_precision_tbr, polluted_generalization_tbr)
+
+def run_pipeline(event_log_path, dqis, discovery_technique, evaluation_method):
+    """
+    Main pipeline for event log pollution analysis.
+    Args:
+        event_log_path (str): Path to the original event log file.
+        dqis (list of str): List of DQIs to apply.
+        discovery_technique (str): Discovery technique to use ('IM', 'alpha', 'ILP').
+        evaluation_method (str): Model evaluation approach ('token-based replay', 'alignments').
+    """
+    import pm4py
+    import os
+
+    # Load the event log
+    log = pm4py.read_xes(event_log_path, return_legacy_log_object=True)
+
+    # Apply DQIs (polluters)
+    for dqi in dqis:
+        polluter_class = globals().get(dqi)
+        if polluter_class is None:
+            raise ValueError(f"DQI '{dqi}' is not a supported polluter.")
+        # Try to instantiate with percentage if possible, else default
+        try:
+            polluter = polluter_class(percentage=0.2)
+        except TypeError:
+            polluter = polluter_class()
+        log = polluter.pollute(log)
+
+    # Discover process model
+    if discovery_technique == 'IM':
+        net, im, fm = pm4py.discover_petri_net_inductive(log)
+    elif discovery_technique == 'alpha':
+        net, im, fm = pm4py.discover_petri_net_alpha(log)
+    elif discovery_technique == 'ILP':
+        net, im, fm = pm4py.discover_petri_net_ilp(log)
+    else:
+        raise ValueError(f"Discovery technique '{discovery_technique}' is not supported.")
+
+    # Evaluate model
+    if evaluation_method == 'token-based replay':
+        fitness = pm4py.conformance.fitness_token_based_replay(log, net, im, fm)
+        precision = pm4py.conformance.precision_token_based_replay(log, net, im, fm)
+        print(f"Token-based replay fitness: {fitness['average_trace_fitness']}")
+        print(f"Token-based replay precision: {precision}")
+    elif evaluation_method == 'alignments':
+        fitness = pm4py.conformance.fitness_alignments(log, net, im, fm)
+        precision = pm4py.conformance.precision_alignments(log, net, im, fm)
+        print(f"Alignment-based fitness: {fitness['average_trace_fitness']}")
+        print(f"Alignment-based precision: {precision}")
+    else:
+        raise ValueError(f"Evaluation method '{evaluation_method}' is not supported.")
+
+    # Optionally, save results or model
+    out_dir = 'out/pipeline_results'
+    os.makedirs(out_dir, exist_ok=True)
+    pm4py.write_pnml(net, im, fm, os.path.join(out_dir, 'discovered_model.pnml'))
+    print(f"Model saved to {os.path.join(out_dir, 'discovered_model.pnml')}")
