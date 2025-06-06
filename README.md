@@ -20,7 +20,7 @@ To use our pipeline, you can simply run the main.py file while specifying the fo
 
 ## Structure
 
-```TO BE RESSTRUCTURED AND CLEANED UP```
+```TO BE RESTRUCTURED AND CLEANED UP```
 
 ```
 ├── GT_log_creation/                # Contains evertyhing needed to create the clean event logs in the experiments
