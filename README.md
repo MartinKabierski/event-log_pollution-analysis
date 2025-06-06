@@ -31,7 +31,6 @@ To use our pipeline, you can simply run the main.py file while specifying the fo
     utils.py                        # Script containing the discovery setup used
 ├── out/                            # The experiment's in the paper full outputs 
 ├── main.py                         # The script to use the pipeline
-├── recreate_experiments.py         # Script to rerun all of the experiment in th original paper
 ├── create_plots.py                 # Used in experiments
 ├── log_pollution.py                # Scripts containing the pollution functions
 ├── noisy_log_evaluation.py         # Scripts containing the evaluation
@@ -39,3 +38,5 @@ To use our pipeline, you can simply run the main.py file while specifying the fo
 ├── requirements.txt                # Python dependencies
 ├── README.md                       # This file
 ```
+
+```Script to recreate experiments with one click to be added soon as well```
