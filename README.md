@@ -22,10 +22,11 @@ To use our pipeline, you can simply run the main.py file while specifying the fo
 
 ```TO BE RESSTRUCTURED AND CLEANED UP```
 
+```
 ├── GT_log_creation/                # Contains evertyhing needed to create the clean event logs in the experiments
-    ├── original_event_logs/        # Contains the original event logs
-    ├── clean_event_logs/           # Contains the clean event logs
-    ├── process_models/             # Different discovered process models that could be used to filter the event log (we used the 0.2 variants)
+│   └──  original_event_logs/        # Contains the original event logs
+│   └──  clean_event_logs/           # Contains the clean event logs
+│   └── process_models/             # Different discovered process models that could be used to filter the event log (we used the 0.2 variants)
     trace_by_trace_filtering.py     # The script used for filtering
     utils.py                        # Script containing the discovery setup used
 ├── out/                            # The experiment's in the paper full outputs 
@@ -36,4 +37,5 @@ To use our pipeline, you can simply run the main.py file while specifying the fo
 ├── noisy_log_evaluation.py         # Scripts containing the evaluation
 ├── scenario_evaluation.py          # Used in experiments
 ├── requirements.txt                # Python dependencies
-└── README.md                       # This file
+├── README.md                       # This file
+```
