@@ -3,8 +3,8 @@
 ## Description
 
 This is the github repository containing implementation of the framework for the evaluation of the impact of data quality issues presented in:
-> How much can we improve process mining? A framework for measuring data quality sensitivity in process discovery
-> Yannis Bertrand, Martin Kabierski, Jari Peeperkorn & Seppe vanden Broucke
+> How much can we improve process mining? A framework for measuring data quality sensitivity in process discovery  
+> Yannis Bertrand, Martin Kabierski, Jari Peeperkorn & Seppe vanden Broucke  
 > Submitted to EdbA'25.
 
 
